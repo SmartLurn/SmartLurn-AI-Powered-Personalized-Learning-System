@@ -20,7 +20,7 @@ const navigation = [
     links: [
       { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
       { label: "Study Rooms", path: "/sessions", icon: UsersRound },
-      { label: "Study Materials", path: "/materials", icon: PanelTop },
+      { label: "Study Materials", path: "/study-materials", icon: PanelTop },
     ],
   },
   {

@@ -56,7 +56,7 @@ const quickLinks = [
     title: "My Files",
     description: "Access your saved materials.",
     icon: FolderOpen,
-    path: "/materials",
+    path: "/study-materials",
     color: "bg-amber-100 text-amber-600",
   },
 ];
