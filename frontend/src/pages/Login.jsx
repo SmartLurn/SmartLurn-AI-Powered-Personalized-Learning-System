@@ -4,6 +4,7 @@ import { Navigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
+import Loader from "../components/Loader";
 
 const Login = ({ mode = "register" }) => {
   const isRegisterMode = mode === "register";
@@ -17,13 +18,7 @@ const Login = ({ mode = "register" }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (isAuthLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50">
-        <p className="text-sm font-medium text-slate-600">
-          Checking authentication...
-        </p>
-      </div>
-    );
+    return <Loader text="Checking authentication..." fullScreen />;
   }
 
   if (isAuthenticated) {
@@ -51,7 +46,7 @@ const Login = ({ mode = "register" }) => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-violet-100 px-4 py-10">
-      <div className="w-full max-w-md rounded-2xl border border-white bg-white/90 p-8 shadow-xl shadow-indigo-100/60 sm:p-10">
+      <div className="w-full max-w-md rounded-2xl border border-white bg-white/90 p-6 shadow-xl shadow-indigo-100/60 sm:p-10">
         <div className="mb-8 text-center">
 
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">

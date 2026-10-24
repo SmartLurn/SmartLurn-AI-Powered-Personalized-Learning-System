@@ -11,6 +11,7 @@ import {
   CircleUserRound,
   Settings,
   LogOut,
+  X,
 } from "lucide-react";
 import useAuth  from "../hooks/useAuth";
 
@@ -41,7 +42,8 @@ const itemClass = ({ isActive }) =>
       : "text-[#686d89] hover:bg-[#f7f6fc] hover:text-[#6555e8]"
   }`;
 
-export default function Sidebar() {
+// isOpen/onClose control the drawer on small screens; on large screens it is always shown
+export default function Sidebar({ isOpen = false, onClose }) {
   const { logout } = useAuth();
 
   const handleLogout = async () => {
@@ -49,10 +51,34 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="flex h-screen w-[240px] shrink-0 flex-col border-r border-slate-200 bg-white px-3 py-5">
+    <>
+      {/* Dark background behind the open drawer (small screens only) */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-950/40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+    <aside
+      className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[240px] shrink-0 flex-col border-r border-slate-200 bg-white px-3 py-5 transition-transform duration-200 lg:sticky lg:top-0 lg:translate-x-0 ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      {/* Close button (small screens only) */}
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute right-3 top-5 rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 lg:hidden"
+        aria-label="Close menu"
+      >
+        <X size={20} />
+      </button>
+
       {/* Logo */}
       <NavLink
         to="/dashboard"
+        onClick={onClose}
         className="mb-6 flex items-center gap-3 px-2"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-700 text-white shadow-md shadow-violet-200/50">
@@ -84,6 +110,7 @@ export default function Sidebar() {
                   to={path}
                   end={path === "/dashboard"}
                   className={itemClass}
+                  onClick={onClose}
                 >
                   <Icon size={17} strokeWidth={2.3} />
                   <span>{label}</span>
@@ -100,12 +127,12 @@ export default function Sidebar() {
           </h2>
 
           <nav className="flex flex-col gap-0.5">
-            <NavLink to="/profile" className={itemClass}>
+            <NavLink to="/profile" className={itemClass} onClick={onClose}>
               <CircleUserRound size={17} strokeWidth={2.3} />
               <span>My Profile</span>
             </NavLink>
 
-            <NavLink to="/settings" className={itemClass}>
+            <NavLink to="/settings" className={itemClass} onClick={onClose}>
               <Settings size={17} strokeWidth={2.3} />
               <span>Settings</span>
             </NavLink>
@@ -122,5 +149,6 @@ export default function Sidebar() {
         </section>
       </div>
     </aside>
+    </>
   );
 }

@@ -6,7 +6,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Sessions from "./pages/Sessions";
-import Pricing from "./pages/Settings";
 import MeetingRoom from "./pages/MeetingRoom";
 
 import ProtectedRoute from "./components/ProtectedRoute";
