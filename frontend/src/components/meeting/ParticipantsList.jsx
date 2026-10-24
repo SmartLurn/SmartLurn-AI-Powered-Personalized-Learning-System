@@ -19,8 +19,6 @@ function ParticipantList({
   remoteUsers = [],
   meetingHostId,
 }) {
-  if (!isOpen) return null;
-
   const allParticipants = useMemo(
     () => [
       {
@@ -36,8 +34,11 @@ function ParticipantList({
     [localUser, localAudio, localVideo, remoteUsers]
   );
 
+  // Hooks must run on every render, so this check comes after useMemo
+  if (!isOpen) return null;
+
   return (
-    <div className="flex h-full w-72 shrink-0 flex-col border-l border-slate-200 bg-white">
+    <div className="fixed inset-0 z-40 flex flex-col bg-white md:static md:z-auto md:h-full md:w-72 md:shrink-0 md:border-l md:border-slate-200">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
         <div className="flex items-center gap-2">

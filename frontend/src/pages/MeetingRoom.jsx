@@ -1,6 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import api from "../config/api";
+import useAuth from "../hooks/useAuth";
+import Loader from "../components/Loader";
 import VideoGrid from "../components/meeting/VideoGrid";
 import useWebRTC from "../hooks/useWebRTC";
 import useChat from "../hooks/useChat";
@@ -11,21 +14,29 @@ import ControlPanel from "../components/meeting/ControlPanel";
 export default function MeetingRoom() {
   const { meetingId } = useParams();
   const navigate = useNavigate();
-  
-  const userdata = {
-    id: "user_mock_001",
-    fullName: "Alex Rivera",
-    firstName: "Alex",
-    lastName: "Rivera",
-    name: "Alex Rivera",
-    email: "alex.rivera@example.com",
-    imageUrl:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
-  };
+  const { user } = useAuth();
 
+  const [meeting, setMeeting] = useState(null);
   const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
 
-  const handleMeetingEnded = useCallback(() => {
+  // Load the meeting details (title, host) from the backend
+  useEffect(() => {
+    const loadMeeting = async () => {
+      try {
+        const { data } = await api.get(`/meetings/${encodeURIComponent(meetingId)}`);
+        setMeeting(data.meeting);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Could not load meeting");
+        navigate("/dashboard");
+      }
+    };
+
+    loadMeeting();
+  }, [meetingId, navigate]);
+
+  // Called when the server says the meeting is over (or not found)
+  const handleMeetingEnded = useCallback((message) => {
+    if (message) toast(message);
     navigate("/dashboard");
   }, [navigate]);
 
@@ -38,9 +49,9 @@ export default function MeetingRoom() {
     toggleAudio,
     toggleVideo,
     endMeeting,
-  } = useWebRTC(meetingId, userdata, handleMeetingEnded);
-  
-  const isHost = true;
+  } = useWebRTC({ roomId: meetingId, user, onMeetingEnded: handleMeetingEnded });
+
+  const isHost = meeting?.host === user?.id;
 
   // Initialize Chat hook
   const {
@@ -49,7 +60,18 @@ export default function MeetingRoom() {
     isChatOpen,
     sendMessage,
     toggleChat,
-  } = useChat(meetingId, userdata);
+  } = useChat(meetingId, user);
+
+  // Only one side panel at a time so the video always has room
+  const handleToggleChat = () => {
+    setIsParticipantsOpen(false);
+    toggleChat();
+  };
+
+  const handleToggleParticipants = () => {
+    if (isChatOpen) toggleChat();
+    setIsParticipantsOpen((prev) => !prev);
+  };
 
   const handleLeaveMeeting = () => {
     toast("You have left the meeting");
@@ -62,18 +84,23 @@ export default function MeetingRoom() {
     navigate("/dashboard");
   };
 
+  // Wait for the meeting details so the title and host controls are correct
+  if (!meeting) {
+    return <Loader text="Joining meeting..." fullScreen />;
+  }
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#faf9ff]">
       {/* Meeting Header */}
-      <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
-        <h1 className="text-lg font-semibold text-slate-800">
-          Study Room
-          <span className="ml-2 text-sm font-normal text-slate-400">
+      <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
+        <h1 className="min-w-0 truncate text-base font-semibold text-slate-800 sm:text-lg">
+          {meeting?.title || "Study Room"}
+          <span className="ml-2 hidden text-sm font-normal text-slate-400 sm:inline">
             ({meetingId})
           </span>
         </h1>
 
-        <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">
+        <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-600">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
           Active
         </span>
@@ -84,7 +111,7 @@ export default function MeetingRoom() {
         <div className="min-h-0 min-w-0 flex-1 overflow-y-auto">
           <VideoGrid
             localStream={localStream}
-            localUser={userdata}
+            localUser={user}
             remoteUsers={remoteUsers}
             audioEnabled={audioEnabled}
             videoEnabled={videoEnabled}
@@ -97,17 +124,17 @@ export default function MeetingRoom() {
           onClose={toggleChat}
           messages={messages}
           onSendMessage={sendMessage}
-          currentUser={userdata}
+          currentUser={user}
         />
 
         <ParticipantsList
           isOpen={isParticipantsOpen}
           onClose={() => setIsParticipantsOpen(false)}
-          localUser={userdata}
+          localUser={user}
           localAudio={audioEnabled}
           localVideo={videoEnabled}
           remoteUsers={remoteUsers}
-          meetingHostId={userdata.id}
+          meetingHostId={meeting?.host}
         />
       </div>
 
@@ -117,8 +144,8 @@ export default function MeetingRoom() {
         videoEnabled={videoEnabled}
         onToggleAudio={toggleAudio}
         onToggleVideo={toggleVideo}
-        onToggleChat={toggleChat}
-        onToggleParticipants={() => setIsParticipantsOpen((prev) => !prev)}
+        onToggleChat={handleToggleChat}
+        onToggleParticipants={handleToggleParticipants}
         isChatOpen={isChatOpen}
         isParticipantsOpen={isParticipantsOpen}
         unreadCount={unreadCount}

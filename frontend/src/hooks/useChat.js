@@ -1,26 +1,31 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { socket } from "../config/socket";
 
 export const useChat = (roomId, user) => {
-  const [messages, setMessages] = useState([
-    {
-        id: "chat_01",
-        senderId: "user_mock_002",
-        senderName: "Sarah Chen",
-        text: "Hey Alex! Can you hear me clearly?",
-        time: "02:15 PM",
-    },
-    {
-        id: "chat_02",
-        senderId: "user_mock_003",
-        senderName: "Marcus Vance",
-        text: "Loud and clear! Ready for the walkthrough.",
-        time: "02:16 PM",
-    },
-]);
-
+  const [messages, setMessages] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Ref so the socket listener always sees the latest open/closed state
+  const isChatOpenRef = useRef(false);
+
+  // Messages from other people in the room
+  useEffect(() => {
+    const handleReceiveMessage = (message) => {
+      setMessages((prev) => [...prev, message]);
+
+      if (!isChatOpenRef.current) {
+        setUnreadCount((count) => count + 1);
+      }
+    };
+
+    socket.on("receive-message", handleReceiveMessage);
+
+    return () => {
+      socket.off("receive-message", handleReceiveMessage);
+    };
+  }, []);
 
   const sendMessage = useCallback(
     (text) => {
@@ -33,24 +38,23 @@ export const useChat = (roomId, user) => {
         roomId,
         text: trimmedText,
         senderId: user.id,
-        senderName: user.fullName || user.name,
+        senderName: user.name,
         time: new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         }),
       };
 
-      setMessages((prev) => [
-        ...prev,
-        message,
-      ]);
+      // Show it straight away, then the server saves it and sends it to the others
+      setMessages((prev) => [...prev, message]);
+      socket.emit("send-message", { roomId, message });
     },
     [roomId, user]
   );
 
   const toggleChat = useCallback(() => {
     setIsChatOpen((prev) => {
-      
+      isChatOpenRef.current = !prev;
 
       if (!prev) {
         setUnreadCount(0);
@@ -66,7 +70,6 @@ export const useChat = (roomId, user) => {
     isChatOpen,
     sendMessage,
     toggleChat,
-   
   };
 };
 
