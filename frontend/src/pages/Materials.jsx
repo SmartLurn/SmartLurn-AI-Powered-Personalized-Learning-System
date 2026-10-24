@@ -1,55 +1,24 @@
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, Upload } from "lucide-react";
 import toast from "react-hot-toast";
+import api from "../config/api";
+import Loader from "../components/Loader";
 
 import MaterialFilters from "../components/materials/MaterialFilter";
 import MaterialCard from "../components/materials/MaterialCard";
 import EmptyMaterials from "../components/materials/EmptyMaterials";
 import UploadMaterialModal from "../components/materials/UploadMaterialModal";
 
-// Temporary data for UI development
-const dummyMaterials = [
-  {
-    id: "1",
-    title: "Data Structures Notes",
-    subject: "Computer Science",
-    description: "Arrays, linked lists, stacks, and queues.",
-    fileType: "PDF",
-    fileSize: "2.4 MB",
-    uploadedAt: "2026-10-20",
-    fileUrl: "",
-  },
-  {
-    id: "2",
-    title: "Operating Systems Revision",
-    subject: "Operating Systems",
-    description: "Processes, threads, scheduling, and memory management.",
-    fileType: "PDF",
-    fileSize: "3.1 MB",
-    uploadedAt: "2026-10-21",
-    fileUrl: "",
-  },
-  {
-    id: "3",
-    title: "Computer Networks Unit 1",
-    subject: "Computer Networks",
-    description: "Networking fundamentals and communication protocols.",
-    fileType: "PDF",
-    fileSize: "1.8 MB",
-    uploadedAt: "2026-10-22",
-    fileUrl: "",
-  },
-];
-
 export default function StudyMaterials() {
   const navigate = useNavigate();
 
-  const [materials, setMaterials] = useState(dummyMaterials);
+  const [materials, setMaterials] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("All");
   const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Generate filter options from available materials
   const subjects = useMemo(
@@ -77,30 +46,63 @@ export default function StudyMaterials() {
   });
 }, [materials, search, selectedSubject]);
 
-  // Add selected PDF to the frontend list
-  const handleUpload = ({ title, subject, description, file }) => {
-    const newMaterial = {
-      id: crypto.randomUUID(),
-      title,
-      subject,
-      description,
-      fileType: "PDF",
-      fileSize: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
-      uploadedAt: new Date().toISOString(),
-      fileUrl: URL.createObjectURL(file),
-      fileName: file.name,
+  // Load the user's materials from the backend
+  useEffect(() => {
+    const loadMaterials = async () => {
+      try {
+        const { data } = await api.get("/materials");
+        setMaterials(data.materials);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Could not load materials");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    setMaterials((previousMaterials) => [
-      newMaterial,
-      ...previousMaterials,
-    ]);
+    loadMaterials();
+  }, []);
 
-    // Reset filters so the new material is visible
-    setSearch("");
-    setSelectedSubject("All");
+  // Upload the PDF to the backend. Returns true on success so the modal can close.
+  const handleUpload = async ({ title, subject, description, file }) => {
+    // Files are sent as multipart form data, not JSON
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("subject", subject);
+    formData.append("description", description);
+    formData.append("file", file);
 
-    toast.success("Material added to your library!");
+    try {
+      const { data } = await api.post("/materials", formData);
+
+      setMaterials((previousMaterials) => [
+        data.material,
+        ...previousMaterials,
+      ]);
+
+      // Reset filters so the new material is visible
+      setSearch("");
+      setSelectedSubject("All");
+
+      toast.success("Material added to your library!");
+      return true;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not upload material");
+      return false;
+    }
+  };
+
+  const handleDelete = async (material) => {
+    if (!window.confirm(`Delete "${material.title}"? This cannot be undone.`)) return;
+
+    try {
+      await api.delete(`/materials/${material.id}`);
+      setMaterials((previousMaterials) =>
+        previousMaterials.filter((m) => m.id !== material.id)
+      );
+      toast.success("Material deleted");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Could not delete material");
+    }
   };
 
   const handleAskAI = (material) => {
@@ -115,7 +117,7 @@ export default function StudyMaterials() {
 
   const handleOpenPDF = (material) => {
     if (!material.fileUrl) {
-      toast("This sample has no PDF attached yet.");
+      toast("This material has no PDF attached.");
       return;
     }
 
@@ -134,7 +136,7 @@ export default function StudyMaterials() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9FF] px-4 py-6 sm:px-8">
+    <div className="min-h-full bg-[#FAF9FF] px-4 py-6 sm:px-8">
       {/* Page heading */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -143,7 +145,7 @@ export default function StudyMaterials() {
             <span className="text-sm font-medium">SmartLurn Library</span>
           </div>
 
-          <h1 className="text-3xl font-bold text-slate-800">
+          <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
             Study Materials
           </h1>
 
@@ -174,8 +176,10 @@ export default function StudyMaterials() {
         />
       )}
 
-      {/* Empty library, no search matches, or material cards */}
-      {materials.length === 0 ? (
+      {/* Loading, empty library, no search matches, or material cards */}
+      {isLoading ? (
+        <Loader text="Loading materials..." />
+      ) : materials.length === 0 ? (
         <EmptyMaterials onUpload={() => setIsUploadOpen(true)} />
       ) : filteredMaterials.length === 0 ? (
         <div className="rounded-2xl border border-violet-100 bg-white px-6 py-12 text-center">
@@ -200,6 +204,7 @@ export default function StudyMaterials() {
                 onAskAI={handleAskAI}
                 onOpenPDF={handleOpenPDF}
                 onStartQuiz={handleStartQuiz}
+                onDelete={handleDelete}
               />
             ))}
           </div>

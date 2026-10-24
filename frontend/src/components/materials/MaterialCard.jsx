@@ -6,6 +6,7 @@ import {
   ExternalLink,
   Brain,
   CalendarDays,
+  Trash2,
 } from "lucide-react";
 
 export default function MaterialCard({
@@ -13,6 +14,7 @@ export default function MaterialCard({
   onAskAI,
   onOpenPDF,
   onStartQuiz,
+  onDelete,
 }) {
   const formattedDate = new Date(
     material.uploadedAt
@@ -30,9 +32,21 @@ export default function MaterialCard({
           <FileText size={24} />
         </div>
 
-        <span className="rounded-lg bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
-          {material.fileType}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded-lg bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
+            {material.fileType}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => onDelete(material)}
+            title="Delete material"
+            aria-label={`Delete ${material.title}`}
+            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
       </div>
 
       {/* Material information */}

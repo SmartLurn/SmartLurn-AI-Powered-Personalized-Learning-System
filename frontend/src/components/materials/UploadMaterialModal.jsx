@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { X, Upload, FileText } from "lucide-react";
+import { X, Upload, FileText, LoaderCircle } from "lucide-react";
 
 export default function UploadMaterialModal({
   isOpen,
@@ -12,10 +12,11 @@ export default function UploadMaterialModal({
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -34,12 +35,17 @@ export default function UploadMaterialModal({
       return;
     }
 
-    onUpload({
+    // Wait for the backend; keep the form open (with its values) if the upload fails
+    setIsUploading(true);
+    const uploaded = await onUpload({
       title: title.trim(),
       subject: subject.trim(),
       description: description.trim(),
       file,
     });
+    setIsUploading(false);
+
+    if (!uploaded) return;
 
     setTitle("");
     setSubject("");
@@ -214,17 +220,23 @@ export default function UploadMaterialModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              disabled={isUploading}
+              className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-medium text-white hover:bg-violet-700"
+              disabled={isUploading}
+              className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              <Upload size={16} />
-              Add Material
+              {isUploading ? (
+                <LoaderCircle size={16} className="animate-spin" />
+              ) : (
+                <Upload size={16} />
+              )}
+              {isUploading ? "Uploading..." : "Add Material"}
             </button>
           </div>
         </form>
