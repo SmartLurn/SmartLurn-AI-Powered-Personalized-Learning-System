@@ -9,7 +9,7 @@ export default function SessionDetailsModal({ session, onClose }) {
 
   if (!session) return null;
 
-  const isEnded = session.status === "ended";
+  const isEnded = session.status !== "active";
 
   const createdAt = new Date(session.createdAt);
 

@@ -12,7 +12,7 @@ function SessionCard({
   onOpenDetails,
   onRejoin,
 }) {
-  const isEnded = session.status === "ended";
+  const isEnded = session.status !== "active";
 
   const participantCount = session.participants?.length ?? 0;
   const messageCount = session.messages?.length ?? 0;

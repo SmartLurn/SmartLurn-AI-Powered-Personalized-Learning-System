@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import toast from "react-hot-toast";
+import api from "../config/api";
+import Loader from "../components/Loader";
+import MeetingActions from "../components/meeting/MeetingActions";
 import EmptySessions from "../components/session/EmptySessions";
 import SessionCard from "../components/session/SessionCard";
 import SessionDetailsModal from "../components/session/SessionDetailsModal";
@@ -8,92 +12,30 @@ import SessionDetailsModal from "../components/session/SessionDetailsModal";
 const Sessions=()=> {
   const navigate = useNavigate();
 
-  // Temporary dummy data
-  const [sessions, setSessions] = useState([
-    {
-      id: "session-001",
-      meetingID: "study-room-123",
-      title: "Data Structures Revision",
-      status: "active",
-      host: {
-        id: "user-001",
-        name: "Alex Rivera",
-      },
-      createdAt: "2026-10-24T14:00:00",
-      participants: [
-        {
-          id: "user-001",
-          name: "Alex Rivera",
-          isHost: true,
-          joinedAt: "2026-10-24T14:00:00",
-        },
-        {
-          id: "user-002",
-          name: "Aarav Sharma",
-          isHost: false,
-          joinedAt: "2026-10-24T14:05:00",
-        },
-        {
-          id: "user-003",
-          name: "Priya Singh",
-          isHost: false,
-          joinedAt: "2026-10-24T14:10:00",
-        },
-      ],
-      messages: [
-        {
-          id: "msg-001",
-          senderId: "user-002",
-          senderName: "Aarav Sharma",
-          text: "Let's start with linked lists.",
-          sentAt: "2026-10-24T14:10:00",
-        },
-        {
-          id: "msg-002",
-          senderId: "user-003",
-          senderName: "Priya Singh",
-          text: "Sure, I have my notes ready.",
-          sentAt: "2026-10-24T14:11:00",
-        },
-      ],
-    },
-    {
-      id: "session-002",
-      meetingID: "study-room-456",
-      title: "Operating Systems Study Group",
-      status: "ended",
-      host: {
-        id: "user-004",
-        name: "Riya Kapoor",
-      },
-      createdAt: "2026-10-23T16:00:00",
-      endedAt: "2026-10-23T17:30:00",
-      participants: [
-        {
-          id: "user-004",
-          name: "Riya Kapoor",
-          isHost: true,
-          joinedAt: "2026-10-23T16:00:00",
-        },
-        {
-          id: "user-005",
-          name: "Kabir Verma",
-          isHost: false,
-          joinedAt: "2026-10-23T16:08:00",
-        },
-      ],
-      messages: [],
-    },
-  ]);
+  const [sessions, setSessions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Session whose details modal is currently open
   const [selectedSession, setSelectedSession] = useState(null);
 
-  // Default tab inside the details modal
-  const [activeTab, setActiveTab] = useState("chat");
+  // Load the user's sessions (hosted or joined) from the backend
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const { data } = await api.get("/meetings/sessions");
+        setSessions(data.sessions);
+      } catch (error) {
+        toast.error(error.response?.data?.message || "Could not load sessions");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSessions();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#FAF9FF] px-4 py-6 sm:px-8">
+    <div className="min-h-full bg-[#FAF9FF] px-4 py-6 sm:px-8">
       {/* Back button */}
       <button
         type="button"
@@ -106,7 +48,7 @@ const Sessions=()=> {
 
       {/* Page heading */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
           Study Sessions
         </h1>
 
@@ -114,38 +56,41 @@ const Sessions=()=> {
           Review your past and active sessions, history, participant logs,
           and chat transcripts.
         </p>
+
+        {/* Start a new room or join one by code */}
+        <div className="mt-5">
+          <MeetingActions />
+        </div>
       </div>
 
-      {/* Session content will be added next */}
-      <div className="rounded-2xl border border-dashed border-violet-200 bg-white p-8 text-center">
-             {sessions.length === 0 ? (
-  <EmptySessions
-    onStartMeeting={() => navigate("/dashboard")}
-  />
-) : (
-  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    {sessions.map((session) => (
-      <SessionCard
-        key={session.id}
-        session={session}
-        onOpenDetails={(session) => {
-          setSelectedSession(session);
-          setActiveTab("chat");
-        }}
-        onRejoin={(session) => {
-          navigate(`/meeting/${session.meetingID}`);
-        }}
-      />
-    ))}
+      <div className="rounded-2xl border border-dashed border-violet-200 bg-white p-4 text-center sm:p-8">
+        {isLoading ? (
+          <Loader text="Loading sessions..." />
+        ) : sessions.length === 0 ? (
+          <EmptySessions
+            onStartMeeting={() => navigate("/dashboard")}
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {sessions.map((session) => (
+              <SessionCard
+                key={session.id}
+                session={session}
+                onOpenDetails={(session) => setSelectedSession(session)}
+                onRejoin={(session) => {
+                  navigate(`/meeting/${session.meetingID}`);
+                }}
+              />
+            ))}
 
-    {selectedSession && (
-  <SessionDetailsModal
-    session={selectedSession}
-    onClose={() => setSelectedSession(null)}
-  />
-)}
-  </div>
-)}
+            {selectedSession && (
+              <SessionDetailsModal
+                session={selectedSession}
+                onClose={() => setSelectedSession(null)}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
