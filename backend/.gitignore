@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+jspm_packages/
+.npm
+.eslintcache
+
+# Production builds
+build/
+dist/
+out/
+.next/
+
+.env
+
