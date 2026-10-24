@@ -1,9 +1,13 @@
-import React from 'react'
+import React from "react";
 
 const Footer = () => {
   return (
-    <div>Footer</div>
-  )
-}
+    <footer className="border-t border-slate-200 px-5 py-3">
+      <p className="text-center text-xs text-slate-400">
+        © {new Date().getFullYear()} SmartLurn · Learn better, together
+      </p>
+    </footer>
+  );
+};
 
-export default Footer
+export default Footer;
