@@ -1,0 +1,30 @@
+
+# FastAPI server
+fastapi
+uvicorn[standard]
+python-multipart
+
+# PDF processing
+pymupdf
+httpx
+
+# Gemini
+google-genai
+
+# LangChain
+langchain
+langchain-core
+langchain-community
+langchain-text-splitters
+langchain-google-genai
+
+# Embeddings
+sentence-transformers
+
+# Vector database
+psycopg[binary]
+pgvector
+sqlalchemy
+
+# Environment configuration
+python-dotenv
