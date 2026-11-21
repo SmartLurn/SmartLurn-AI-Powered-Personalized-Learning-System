@@ -1,15 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  MessagesSquare,
-  FileText,
-  Upload,
-  Send,
-  LoaderCircle,
-  Bot,
-  User,
-  BookOpen,
-} from "lucide-react";
+import { ExternalLink, FileText, GraduationCap, Quote, Send, Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../config/api";
 import aiApi, { getAiError } from "../config/aiApi";
@@ -20,6 +11,12 @@ const SUGGESTED_QUESTIONS = [
   "Summarize this material in simple words",
   "What are the key concepts I should know?",
   "Give me 5 practice questions with answers",
+];
+
+const EXACT_WORDING_EXAMPLES = [
+  "Give the exact definition of normalization",
+  "What is the original wording for 3NF?",
+  "Quote the PDF on primary keys",
 ];
 
 // Show **bold** text from the AI answer as real bold text
@@ -74,7 +71,8 @@ export default function AIAssistant() {
   const location = useLocation();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const messagesEndRef = useRef(null);
+  const messagesBoxRef = useRef(null);
+  const chatRef = useRef(null);
 
   const [materials, setMaterials] = useState([]);
   const [isLoadingMaterials, setIsLoadingMaterials] = useState(true);
@@ -107,6 +105,11 @@ export default function AIAssistant() {
 
   const selectSource = async (source) => {
     setSelected(source);
+
+    // Phones show the list above the chat: scroll down to the chat
+    if (window.innerWidth < 1024) {
+      chatRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
     setDocumentId(null);
     setMessages([]);
     setIsLoadingDocument(true);
@@ -161,9 +164,10 @@ export default function AIAssistant() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Keep the newest message in view
+  // Keep the newest message in view (scroll only the chat box, not the whole page)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const box = messagesBoxRef.current;
+    if (box) box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
   }, [messages, isAsking]);
 
   const handleFileChange = (e) => {
@@ -242,131 +246,153 @@ export default function AIAssistant() {
 
   const canAsk = Boolean(documentId) && !isLoadingDocument && !isAsking;
 
+  // Details for the right-hand panel
+  const selectedInfo = selected?.material
+    ? { subject: selected.material.subject, size: selected.material.fileSize, url: selected.material.fileUrl }
+    : selected?.file
+    ? { subject: "Uploaded for this chat", size: `${(selected.file.size / (1024 * 1024)).toFixed(2)} MB`, url: null }
+    : null;
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="mx-auto flex max-w-[1440px] flex-col px-4 py-5 sm:px-6 lg:h-[calc(100dvh-4rem)] lg:px-8">
       <PageHeader
         title="AI study assistant"
         description="Pick a PDF and ask about it. Answers come only from your material, with page numbers."
       />
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[300px_1fr]">
-        {/* Left: choose a PDF */}
-        <aside className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto">
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={isLoadingDocument}
-            className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
-          >
-            <Upload size={16} />
-            Upload a PDF
-          </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/pdf"
+        className="hidden"
+        onChange={handleFileChange}
+      />
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/pdf"
-            className="hidden"
-            onChange={handleFileChange}
-          />
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 lg:grid-cols-[272px_1fr] xl:grid-cols-[272px_1fr_272px]">
+        {/* Left: materials */}
+        <aside
+          className="flex animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-white lg:min-h-0"
+          style={{ animationDelay: "60ms" }}
+        >
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5">
+            <h2 className="text-sm font-semibold text-slate-900">Materials</h2>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoadingDocument}
+              className="press inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            >
+              <Upload size={14} />
+              Upload
+            </button>
+          </div>
 
-          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-            Your study materials
-          </h2>
+          <div className="max-h-64 flex-1 overflow-y-auto p-2 lg:max-h-none">
+            {isLoadingMaterials ? (
+              <Loader text="" />
+            ) : materials.length === 0 ? (
+              <div className="m-2 rounded-xl border border-dashed border-slate-200 p-4 text-center text-sm text-slate-500">
+                No materials yet. Upload a PDF to start a chat.
+              </div>
+            ) : (
+              <ul className="space-y-0.5">
+                {materials.map((material) => {
+                  const key = `material-${material.id}`;
+                  const isActive = selected?.key === key;
 
-          {isLoadingMaterials ? (
-            <Loader text="" />
-          ) : materials.length === 0 ? (
-            <div className="rounded-xl bg-brand-50 p-4 text-center text-sm text-slate-500">
-              <BookOpen size={20} className="mx-auto mb-2 text-brand-500" />
-              No materials yet. Upload a PDF above or add one in Study Materials.
-            </div>
-          ) : (
-            <ul className="space-y-1">
-              {materials.map((material) => {
-                const key = `material-${material.id}`;
-                const isActive = selected?.key === key;
-
-                return (
-                  <li key={material.id}>
-                    <button
-                      type="button"
-                      disabled={isLoadingDocument}
-                      onClick={() =>
-                        !isActive &&
-                        selectSource({ key, title: material.title, material })
-                      }
-                      className={`flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition disabled:cursor-not-allowed ${
-                        isActive
-                          ? "bg-brand-100 text-brand-700"
-                          : "text-slate-700 hover:bg-slate-50"
-                      }`}
-                    >
-                      <FileText size={18} className="mt-0.5 shrink-0" />
-                      <span className="min-w-0">
-                        <span className="block truncate text-sm font-medium">
-                          {material.title}
+                  return (
+                    <li key={material.id}>
+                      <button
+                        type="button"
+                        disabled={isLoadingDocument}
+                        onClick={() => !isActive && selectSource({ key, title: material.title, material })}
+                        className={`relative flex w-full items-center gap-3 rounded-lg px-2.5 py-2.5 text-left transition disabled:cursor-not-allowed ${
+                          isActive ? "bg-brand-50" : "hover:bg-slate-50"
+                        }`}
+                      >
+                        {isActive && <span className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-brand-600" />}
+                        <span
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                            isActive ? "bg-white text-brand-600 ring-1 ring-brand-100" : "bg-rose-50 text-rose-600"
+                          }`}
+                        >
+                          <FileText size={16} />
                         </span>
-                        <span className="block truncate text-xs text-slate-400">
-                          {material.subject}
+                        <span className="min-w-0">
+                          <span className={`block truncate text-sm font-medium ${isActive ? "text-brand-700" : "text-slate-800"}`}>
+                            {material.title}
+                          </span>
+                          <span className="block truncate text-xs text-slate-400">
+                            {material.subject} · {material.fileSize}
+                          </span>
                         </span>
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
         </aside>
 
-        {/* Right: chat */}
-        <section className="flex h-[calc(100vh-200px)] min-h-[480px] flex-col rounded-2xl border border-brand-100 bg-white shadow-sm">
-          {/* Selected PDF */}
-          <div className="flex items-center gap-3 border-b border-brand-100 px-5 py-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
-              <FileText size={20} />
-            </div>
-            <div className="min-w-0">
-              <p className="truncate font-semibold text-slate-800">
-                {selected ? selected.title : "No PDF selected"}
+        {/* Middle: chat */}
+        <section
+          ref={chatRef}
+          className="flex h-[78dvh] min-h-[440px] scroll-mt-20 animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-white lg:h-auto lg:min-h-0"
+          style={{ animationDelay: "120ms" }}
+        >
+          {/* Chat header */}
+          <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-3.5">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-slate-900">
+                {selected ? selected.title : "New chat"}
               </p>
               <p className="text-xs text-slate-500">
                 {isLoadingDocument
                   ? "Reading PDF..."
                   : documentId
-                  ? `${totalPages} pages with text · ready for questions`
-                  : "Choose a material or upload a PDF to start"}
+                  ? `${totalPages} pages · answers cite page numbers`
+                  : "Choose a material to start"}
               </p>
             </div>
+            {selected && (
+              <span
+                className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                  documentId ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                }`}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${documentId ? "bg-emerald-500" : "animate-pulse bg-amber-500"}`} />
+                {documentId ? "Ready" : "Reading"}
+              </span>
+            )}
           </div>
 
           {/* Messages */}
-          <div className="flex-1 space-y-4 overflow-y-auto px-5 py-5">
+          <div ref={messagesBoxRef} className="flex-1 space-y-5 overflow-y-auto px-5 py-6">
             {isLoadingDocument ? (
               <Loader text="Reading your PDF..." />
             ) : !documentId ? (
-              <div className="flex h-full flex-col items-center justify-center text-center">
-                <Bot size={40} className="mb-3 text-brand-400" />
-                <p className="font-medium text-slate-700">
-                  Ask anything about your study material
-                </p>
-                <p className="mt-1 text-sm text-slate-500">
-                  Select a PDF on the left to begin.
+              <div className="flex h-full flex-col items-center justify-center px-6 text-center">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 text-slate-400 ring-1 ring-slate-200">
+                  <FileText size={22} />
+                </div>
+                <p className="font-medium text-slate-800">Ask anything about your notes</p>
+                <p className="mt-1 max-w-sm text-sm text-slate-500">
+                  Pick a material on the left, or upload a PDF just for this chat.
                 </p>
               </div>
             ) : messages.length === 0 ? (
-              <div className="flex h-full flex-col items-center justify-center text-center">
-                <MessagesSquare size={32} className="mb-3 text-brand-400" />
-                <p className="mb-4 font-medium text-slate-700">
-                  What would you like to know?
-                </p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {SUGGESTED_QUESTIONS.map((suggestion) => (
+              <div className="flex h-full flex-col items-center justify-center px-6 text-center">
+                <p className="font-medium text-slate-800">What would you like to know?</p>
+                <p className="mb-5 mt-1 text-sm text-slate-500">Try one of these, or type your own question.</p>
+                <div className="flex max-w-lg flex-wrap justify-center gap-2">
+                  {SUGGESTED_QUESTIONS.map((suggestion, index) => (
                     <button
                       key={suggestion}
                       type="button"
                       onClick={() => askQuestion(suggestion)}
-                      className="rounded-full border border-brand-200 px-4 py-2 text-sm text-brand-700 transition hover:bg-brand-50"
+                      className="press animate-fade-up rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-700 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
+                      style={{ animationDelay: `${index * 60}ms` }}
                     >
                       {suggestion}
                     </button>
@@ -377,28 +403,20 @@ export default function AIAssistant() {
               messages.map((message, index) => {
                 const isUser = message.role === "user";
 
-                return (
-                  <div
-                    key={index}
-                    className={`flex gap-3 ${isUser ? "flex-row-reverse" : ""}`}
-                  >
-                    <div
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                        isUser
-                          ? "bg-brand-600 text-white"
-                          : "bg-brand-100 text-brand-600"
-                      }`}
-                    >
-                      {isUser ? <User size={16} /> : <Bot size={16} />}
+                return isUser ? (
+                  <div key={index} className="flex animate-fade-up justify-end">
+                    <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-brand-600 px-4 py-2.5 text-sm leading-relaxed text-white">
+                      {message.content}
                     </div>
-
+                  </div>
+                ) : (
+                  <div key={index} className="flex animate-fade-up gap-3">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+                      <GraduationCap size={15} />
+                    </div>
                     <div
-                      className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                        isUser
-                          ? "bg-brand-600 text-white"
-                          : message.isError
-                          ? "bg-red-50 text-red-600"
-                          : "bg-slate-50 text-slate-700"
+                      className={`min-w-0 max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-tl-md border px-4 py-3 text-sm leading-relaxed ${
+                        message.isError ? "border-red-100 bg-red-50 text-red-700" : "border-slate-200/80 bg-white text-slate-700"
                       }`}
                     >
                       <FormattedText text={message.content} />
@@ -409,42 +427,101 @@ export default function AIAssistant() {
             )}
 
             {isAsking && (
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <LoaderCircle size={16} className="animate-spin text-brand-600" />
-                Thinking...
+              <div className="flex animate-fade-up gap-3">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+                  <GraduationCap size={15} />
+                </div>
+                <div className="flex items-center gap-1 rounded-2xl rounded-tl-md border border-slate-200/80 px-4 py-3.5" aria-label="Thinking">
+                  {[0, 150, 300].map((delay) => (
+                    <span key={delay} className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400" style={{ animationDelay: `${delay}ms` }} />
+                  ))}
+                </div>
               </div>
             )}
 
-            <div ref={messagesEndRef} />
           </div>
 
           {/* Question box */}
-          <form
-            onSubmit={handleSubmit}
-            className="flex items-end gap-2 border-t border-brand-100 p-4"
-          >
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={!documentId || isLoadingDocument}
-              rows={1}
-              maxLength={2000}
-              placeholder={
-                documentId ? "Ask a question about this PDF..." : "Select a PDF first"
-              }
-              className="max-h-32 min-h-[46px] flex-1 resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100 disabled:bg-slate-50"
-            />
-            <button
-              type="submit"
-              disabled={!canAsk || !question.trim()}
-              aria-label="Send question"
-              className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white transition hover:bg-brand-700 disabled:opacity-50"
-            >
-              <Send size={18} />
-            </button>
+          <form onSubmit={handleSubmit} className="border-t border-slate-100 p-4">
+            <div className="flex items-end gap-2 rounded-xl border border-slate-200 bg-white p-1.5 pl-3.5 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-50">
+              <textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={!documentId || isLoadingDocument}
+                rows={1}
+                maxLength={2000}
+                placeholder={documentId ? "Ask a follow-up question..." : "Select a PDF first"}
+                className="max-h-32 min-h-[40px] flex-1 resize-none bg-transparent py-2.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed"
+              />
+              <button
+                type="submit"
+                disabled={!canAsk || !question.trim()}
+                aria-label="Send question"
+                className="press flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40"
+              >
+                <Send size={16} />
+              </button>
+            </div>
+            <p className="mt-2 px-1 text-[11px] text-slate-400">Enter to send · Shift + Enter for a new line</p>
           </form>
         </section>
+
+        {/* Right: material details and prompts (wide screens) */}
+        <aside className="hidden min-h-0 animate-fade-up space-y-5 overflow-y-auto xl:block" style={{ animationDelay: "180ms" }}>
+          <section className="rounded-2xl border border-slate-200/80 bg-white p-4">
+            <h2 className="mb-3 text-sm font-semibold text-slate-900">Attached material</h2>
+            {selectedInfo ? (
+              <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+                    <FileText size={16} />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="line-clamp-2 text-sm font-medium text-slate-800">{selected.title}</p>
+                    <p className="mt-0.5 text-xs text-slate-500">
+                      {selectedInfo.size}
+                      {documentId ? ` · ${totalPages} pages` : ""}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-3 truncate text-xs text-slate-500">{selectedInfo.subject}</p>
+                {selectedInfo.url && (
+                  <a
+                    href={selectedInfo.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="press mt-3 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  >
+                    Open PDF <ExternalLink size={13} />
+                  </a>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500">No material selected.</p>
+            )}
+          </section>
+
+          <section className="rounded-2xl border border-brand-100 bg-brand-50/60 p-4">
+            <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-brand-900">
+              <Quote size={15} className="text-brand-600" />
+              Need the exact definition?
+            </div>
+            <p className="text-sm leading-6 text-slate-600">
+              By default answers are explained in simple words. To get the text exactly as written in your PDF, mention it in your question, for example:
+            </p>
+            <ul className="mt-3 space-y-1.5">
+              {EXACT_WORDING_EXAMPLES.map((example) => (
+                <li key={example} className="rounded-lg border border-brand-100 bg-white px-3 py-2 text-[13px] text-slate-700">
+                  “{example}”
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-xs leading-5 text-slate-500">
+              The answer then quotes your PDF word for word, with the page number.
+            </p>
+          </section>
+        </aside>
       </div>
     </div>
   );

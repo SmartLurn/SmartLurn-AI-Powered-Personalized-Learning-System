@@ -11,7 +11,7 @@ export default function MaterialFilters({
   return (
     <div className="mb-6 flex animate-fade-up flex-col gap-3 sm:flex-row" style={{ animationDelay: "60ms" }}>
       {/* Search bar */}
-      <div className="flex h-11 flex-1 items-center gap-3 rounded-lg border border-slate-200 bg-white px-3.5 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-50">
+      <div className="flex h-11 w-full items-center gap-3 sm:flex-1 rounded-lg border border-slate-200 bg-white px-3.5 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-50">
         <Search size={17} className="shrink-0 text-slate-400" />
 
         <input

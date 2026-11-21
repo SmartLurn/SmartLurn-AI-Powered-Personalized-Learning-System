@@ -1,42 +1,51 @@
+import { ClipboardList, ExternalLink, FileText, MessageSquareText, Trash2 } from "lucide-react";
 
-import {
-  BookOpen,
-  FileText,
-  MessageCircle,
-  ExternalLink,
-  Brain,
-  CalendarDays,
-  Trash2,
-} from "lucide-react";
+// Each subject always gets the same soft colour
+const SUBJECT_TINTS = [
+  "bg-brand-50 text-brand-700",
+  "bg-sky-50 text-sky-700",
+  "bg-amber-50 text-amber-700",
+  "bg-emerald-50 text-emerald-700",
+  "bg-rose-50 text-rose-700",
+  "bg-violet-50 text-violet-700",
+];
 
-export default function MaterialCard({
-  material,
-  onAskAI,
-  onOpenPDF,
-  onStartQuiz,
-  onDelete,
-}) {
-  const formattedDate = new Date(
-    material.uploadedAt
-  ).toLocaleDateString("en-IN", {
+const subjectTint = (subject = "") => {
+  let hash = 0;
+  for (const char of subject) hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  return SUBJECT_TINTS[hash % SUBJECT_TINTS.length];
+};
+
+export default function MaterialCard({ material, onAskAI, onOpenPDF, onStartQuiz, onDelete }) {
+  const formattedDate = new Date(material.uploadedAt).toLocaleDateString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 
   return (
-    <article className="card-hover animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5">
-      {/* File icon and type */}
-      <div className="mb-4 flex items-start justify-between">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
-          <FileText size={24} />
+    <article className="group card-hover flex animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-white p-5">
+      {/* File icon, subject and quick actions */}
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="relative flex h-12 w-10 shrink-0 items-end justify-center rounded-md border border-slate-200 bg-white pb-1.5 shadow-sm">
+          {/* Folded corner */}
+          <span className="absolute right-0 top-0 h-3 w-3 rounded-bl-sm border-b border-l border-slate-200 bg-slate-50" />
+          <FileText size={16} className="absolute left-1/2 top-2.5 -translate-x-1/2 text-slate-300" />
+          <span className="rounded-sm bg-rose-500 px-1 text-[8px] font-bold leading-3 text-white">
+            {material.fileType || "PDF"}
+          </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="rounded-lg bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
-            {material.fileType}
-          </span>
-
+        <div className="flex items-center gap-0.5 sm:opacity-0 sm:transition sm:group-hover:opacity-100 sm:focus-within:opacity-100">
+          <button
+            type="button"
+            onClick={() => onOpenPDF(material)}
+            title="Open PDF"
+            aria-label={`Open ${material.title}`}
+            className="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <ExternalLink size={16} />
+          </button>
           <button
             type="button"
             onClick={() => onDelete(material)}
@@ -50,54 +59,37 @@ export default function MaterialCard({
       </div>
 
       {/* Material information */}
-      <h2 className="text-lg font-semibold text-slate-800">
-        {material.title}
-      </h2>
-
-      <p className="mt-1 text-sm font-medium text-brand-600">
+      <span className={`mb-2 self-start rounded-md px-2 py-0.5 text-[11px] font-medium ${subjectTint(material.subject)}`}>
         {material.subject}
+      </span>
+
+      <h2 className="line-clamp-2 text-[15px] font-semibold leading-snug text-slate-900">{material.title}</h2>
+
+      <p className="mt-1.5 line-clamp-2 min-h-10 text-sm leading-5 text-slate-500">
+        {material.description || "No description added."}
       </p>
 
-      <p className="mt-3 min-h-10 text-sm leading-5 text-slate-500">
-        {material.description || "No description provided."}
+      <p className="mt-4 text-xs text-slate-400">
+        {material.fileSize || "Size unavailable"} · {formattedDate}
       </p>
-
-      {/* File metadata */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-xs text-slate-400">
-        <span>{material.fileSize || "Size unavailable"}</span>
-
-        <span className="flex items-center gap-1">
-          <CalendarDays size={14} />
-          {formattedDate}
-        </span>
-      </div>
 
       {/* Actions */}
-      <div className="mt-5 grid grid-cols-3 gap-2">
+      <div className="mt-4 flex gap-2 border-t border-slate-100 pt-4">
         <button
           type="button"
           onClick={() => onAskAI(material)}
-          className="flex items-center justify-center gap-1 rounded-lg bg-brand-600 px-2 py-2.5 text-xs font-medium text-white transition hover:bg-brand-700"
+          className="press flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700"
         >
-          <MessageCircle size={14} />
+          <MessageSquareText size={15} />
           Ask AI
         </button>
 
         <button
           type="button"
-          onClick={() => onOpenPDF(material)}
-          className="flex items-center justify-center gap-1 rounded-lg border border-brand-200 px-2 py-2.5 text-xs font-medium text-brand-700 transition hover:bg-brand-50"
-        >
-          <ExternalLink size={14} />
-          Open PDF
-        </button>
-
-        <button
-          type="button"
           onClick={() => onStartQuiz(material)}
-          className="flex items-center justify-center gap-1 rounded-lg border border-slate-200 px-2 py-2.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50"
+          className="press flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
-          <Brain size={14} />
+          <ClipboardList size={15} />
           Quiz
         </button>
       </div>
