@@ -3,15 +3,13 @@ import { GraduationCap } from "lucide-react";
 
 const SPLASH_MS = 1200;
 
-// Short welcome screen shown each time the dashboard opens.
-export default function WelcomeSplash({ name, isNewUser = false, onDone }) {
+// Short intro shown when the site is opened/reloaded or right after logging in.
+export default function WelcomeSplash({ onDone }) {
   useEffect(() => {
     if (!onDone) return; // the dashboard decides when to hide it
     const timer = setTimeout(onDone, SPLASH_MS);
     return () => clearTimeout(timer);
   }, [onDone]);
-
-  const firstName = name?.trim()?.split(" ")[0];
 
   return (
     <div
@@ -28,8 +26,7 @@ export default function WelcomeSplash({ name, isNewUser = false, onDone }) {
       </div>
 
       <h1 className="relative mt-8 animate-fade-up text-2xl font-semibold tracking-tight" style={{ animationDelay: "150ms" }}>
-        {isNewUser ? "Welcome to SmartLurn" : "Welcome back"}
-        {firstName ? `, ${firstName}` : ""}
+        SmartLurn
       </h1>
       <p className="relative mt-2 animate-fade-up text-sm text-[#dbe8de]" style={{ animationDelay: "250ms" }}>
         Getting your study space ready...

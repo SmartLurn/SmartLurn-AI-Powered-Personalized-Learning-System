@@ -57,15 +57,13 @@ const Login = ({ mode = "register" }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // New accounts get "Welcome to SmartLurn" on the dashboard intro
-  const [isNewUser, setIsNewUser] = useState(false);
 
   if (isAuthLoading) {
     return <Loader text="Checking authentication..." fullScreen />;
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace state={isNewUser ? { isNewUser: true } : undefined} />;
+    return <Navigate to="/dashboard" replace state={{ fromLogin: true }} />;
   }
 
   const handleSubmit = async (e) => {
@@ -74,13 +72,11 @@ const Login = ({ mode = "register" }) => {
 
     try {
       if (isRegisterMode) {
-        setIsNewUser(true);
         await signup(name, email, password);
       } else {
         await login(email, password);
       }
     } catch (err) {
-      setIsNewUser(false);
       toast.error(err.message || "Something went wrong");
     } finally {
       setIsSubmitting(false);

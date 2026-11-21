@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Hash, MessageSquare, UsersRound, Video } from "lucide-react";
+import { UsersRound, Video } from "lucide-react";
 import api from "../config/api";
 import Loader from "../components/Loader";
 import PageHeader from "../components/PageHeader";
@@ -57,12 +57,10 @@ const Sessions=()=> {
           </div>
 
           {/* What a room includes */}
-          <ul className="grid shrink-0 grid-cols-2 gap-2 rounded-xl bg-[#e8dcc4] p-3 text-[#1f3d2b] sm:grid-cols-4 md:grid-cols-2">
+          <ul className="grid shrink-0 grid-cols-2 gap-2 rounded-xl bg-[#e8dcc4] p-3 text-[#1f3d2b] md:grid-cols-1">
             {[
               { icon: UsersRound, text: "Up to 6 people" },
-              { icon: Video, text: "Video & audio" },
-              { icon: MessageSquare, text: "Live chat" },
-              { icon: Hash, text: "Join with a code" },
+              { icon: Video, text: "Video call & audio" },
             ].map(({ icon: Icon, text }) => (
               <li key={text} className="flex items-center gap-2 rounded-lg bg-[#f3ead6] px-3 py-2 text-xs font-medium">
                 <Icon size={14} className="shrink-0" />

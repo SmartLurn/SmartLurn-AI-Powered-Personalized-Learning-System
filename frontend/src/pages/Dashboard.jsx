@@ -20,6 +20,13 @@ import WelcomeSplash from "../components/WelcomeSplash";
 // The intro shows at least this long, and until the dashboard data has loaded
 const INTRO_MIN_MS = 1100;
 
+// Kept between visits to the dashboard (cleared when the page is reloaded):
+// going back to the dashboard shows this instantly, then refreshes it quietly
+let cachedDashboard = null; // { userId, stats, materials, sessions }
+
+// The intro plays once per page load, and again right after logging in
+let hasShownIntro = false;
+
 const formatStudyTime = (minutes) => {
   if (minutes < 60) return { value: minutes, unit: "min" };
   return { value: (minutes / 60).toFixed(1), unit: "hr" };
@@ -86,21 +93,30 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [stats, setStats] = useState(null);
-  const [materials, setMaterials] = useState([]);
-  const [sessions, setSessions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Data from the last visit, only if it belongs to this user
+  const cached = cachedDashboard && cachedDashboard.userId === user?.id ? cachedDashboard : null;
+
+  const [stats, setStats] = useState(cached?.stats ?? null);
+  const [materials, setMaterials] = useState(cached?.materials ?? []);
+  const [sessions, setSessions] = useState(cached?.sessions ?? []);
+  const [isLoading, setIsLoading] = useState(!cached);
   const [question, setQuestion] = useState("");
 
   const firstName = user?.name?.trim()?.split(" ")[0] || "there";
 
-  // Intro animation every time the dashboard opens: stays at least INTRO_MIN_MS
-  // and until the data is ready, then fades out
-  const [isMinTimeDone, setIsMinTimeDone] = useState(false);
-  const [isIntroGone, setIsIntroGone] = useState(false);
+  // Intro animation: only when the site is first opened/reloaded or right after login.
+  // It stays at least INTRO_MIN_MS and until the data is ready, then fades out.
+  const [showIntro] = useState(() => !hasShownIntro || Boolean(location.state?.fromLogin));
+  const [isMinTimeDone, setIsMinTimeDone] = useState(!showIntro);
+  const [isIntroGone, setIsIntroGone] = useState(!showIntro);
   useEffect(() => {
+    hasShownIntro = true;
+    // Forget "came from login" so going back/forward doesn't replay the intro
+    if (location.state?.fromLogin) navigate(location.pathname, { replace: true, state: null });
+    if (!showIntro) return;
     const timer = setTimeout(() => setIsMinTimeDone(true), INTRO_MIN_MS);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Load everything the dashboard shows at the same time
@@ -112,17 +128,24 @@ export default function Dashboard() {
         api.get("/meetings/sessions"),
       ]);
 
-      if (statsResult.status === "fulfilled") setStats(statsResult.value.data.stats);
-      if (materialsResult.status === "fulfilled") setMaterials(materialsResult.value.data.materials);
-      if (sessionsResult.status === "fulfilled") setSessions(sessionsResult.value.data.sessions);
+      const newStats = statsResult.status === "fulfilled" ? statsResult.value.data.stats : cached?.stats ?? null;
+      const newMaterials = materialsResult.status === "fulfilled" ? materialsResult.value.data.materials : cached?.materials ?? [];
+      const newSessions = sessionsResult.status === "fulfilled" ? sessionsResult.value.data.sessions : cached?.sessions ?? [];
 
-      if ([statsResult, materialsResult, sessionsResult].some((r) => r.status === "rejected")) {
+      setStats(newStats);
+      setMaterials(newMaterials);
+      setSessions(newSessions);
+      cachedDashboard = { userId: user?.id, stats: newStats, materials: newMaterials, sessions: newSessions };
+
+      // Only complain if there was nothing to show (a failed quiet refresh keeps the old data)
+      if (!cached && [statsResult, materialsResult, sessionsResult].some((r) => r.status === "rejected")) {
         toast.error("Some dashboard data could not be loaded");
       }
       setIsLoading(false);
     };
 
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isIntroLeaving = isMinTimeDone && !isLoading;
@@ -173,7 +196,7 @@ export default function Dashboard() {
             isIntroLeaving ? "pointer-events-none opacity-0" : "opacity-100"
           }`}
         >
-          <WelcomeSplash name={user?.name} isNewUser={Boolean(location.state?.isNewUser)} />
+          <WelcomeSplash />
         </div>,
         document.body
       )}
