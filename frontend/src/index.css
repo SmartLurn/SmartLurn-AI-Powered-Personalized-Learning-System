@@ -26,6 +26,12 @@
   --animate-float: float 6s ease-in-out infinite;
   --animate-grow-up: grow-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-pop-in: pop-in 0.25s ease-out both;
+  --animate-grow-x: grow-x 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes grow-x {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
