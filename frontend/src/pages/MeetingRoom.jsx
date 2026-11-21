@@ -95,7 +95,8 @@ export default function MeetingRoom() {
       <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
         <h1 className="min-w-0 truncate text-base font-semibold text-slate-800 sm:text-lg">
           {meeting?.title || "Study Room"}
-          <span className="ml-2 hidden text-sm font-normal text-slate-400 sm:inline">
+          {/* The meeting code, shown on phones too so people know what to share */}
+          <span className="ml-2 text-xs font-normal text-slate-400 sm:text-sm">
             ({meetingId})
           </span>
         </h1>
