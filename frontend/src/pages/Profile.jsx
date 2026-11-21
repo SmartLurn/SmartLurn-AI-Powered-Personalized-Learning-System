@@ -14,6 +14,7 @@ import {
 import api from "../config/api";
 import useAuth from "../hooks/useAuth";
 import Loader from "../components/Loader";
+import PageHeader from "../components/PageHeader";
 
 // 135 -> "2h 15m", 40 -> "40m"
 const formatMinutes = (minutes = 0) => {
@@ -114,21 +115,13 @@ function Profile() {
   ];
 
   return (
-    <div className="min-h-full bg-cream px-4 py-6 sm:px-7">
+    <div className="px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl space-y-6">
-        {/* Heading */}
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            My Profile
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Your account details and study activity.
-          </p>
-        </div>
+        <PageHeader title="My profile" description="Your account details and study activity." />
 
         {/* Profile card */}
         <section className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-center sm:flex-row sm:text-left">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-3xl font-bold text-white shadow-md">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-brand-100 text-3xl font-semibold text-brand-700 shadow-md">
             {profile.name?.charAt(0)?.toUpperCase() || "?"}
           </div>
 

@@ -7,7 +7,7 @@ const Loader = ({ text = "Loading...", fullScreen = false }) => {
   return (
     <div
       className={`flex flex-col items-center justify-center gap-3 ${
-        fullScreen ? "min-h-screen bg-cream" : "py-10"
+        fullScreen ? "min-h-screen bg-canvas" : "py-10"
       }`}
     >
       <LoaderCircle size={28} className="animate-spin text-brand-600" />

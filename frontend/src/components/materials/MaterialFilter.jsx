@@ -9,10 +9,10 @@ export default function MaterialFilters({
   subjects = [],
 }) {
   return (
-    <div className="mb-6 space-y-4">
+    <div className="mb-6 flex animate-fade-up flex-col gap-3 sm:flex-row" style={{ animationDelay: "60ms" }}>
       {/* Search bar */}
-      <div className="flex items-center gap-3 rounded-xl border border-brand-100 bg-white px-4 py-3 shadow-sm">
-        <Search size={20} className="shrink-0 text-slate-400" />
+      <div className="flex h-11 flex-1 items-center gap-3 rounded-lg border border-slate-200 bg-white px-3.5 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-50">
+        <Search size={17} className="shrink-0 text-slate-400" />
 
         <input
           type="text"
@@ -24,13 +24,14 @@ export default function MaterialFilters({
       </div>
 
       {/* Subject filter */}
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div>
         <select
           value={selectedSubject}
           onChange={(e) => setSelectedSubject(e.target.value)}
-          className="rounded-xl border border-brand-100 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-brand-400"
+          aria-label="Filter by subject"
+          className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-50 sm:w-52"
         >
-          <option value="All">All Subjects</option>
+          <option value="All">All subjects</option>
 
           {subjects.map((subject) => (
             <option key={subject} value={subject}>

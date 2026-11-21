@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { AlertTriangle, Eye, EyeOff, KeyRound, LoaderCircle, LogOut, Trash2 } from "lucide-react";
 import api from "../config/api";
 import useAuth from "../hooks/useAuth";
+import PageHeader from "../components/PageHeader";
 
 const MIN_PASSWORD_LENGTH = 6; // same rule as the backend
 
@@ -112,17 +113,9 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-full bg-cream px-4 py-6 sm:px-7">
+    <div className="px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl space-y-6">
-        {/* Heading */}
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-            Settings
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Manage your password and account.
-          </p>
-        </div>
+        <PageHeader title="Settings" description="Manage your password and account." />
 
         {/* Change password */}
         <section className="rounded-2xl border border-slate-200 bg-white p-6">

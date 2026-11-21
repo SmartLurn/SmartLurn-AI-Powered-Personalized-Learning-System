@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  Sparkles,
+  MessagesSquare,
   FileText,
   Upload,
   Send,
@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import api from "../config/api";
 import aiApi, { getAiError } from "../config/aiApi";
 import Loader from "../components/Loader";
+import PageHeader from "../components/PageHeader";
 
 const SUGGESTED_QUESTIONS = [
   "Summarize this material in simple words",
@@ -148,6 +149,9 @@ export default function AIAssistant() {
 
         selectSource({ key: `material-${material.id}`, title: material.title, material });
 
+        // A question typed on the dashboard: put it in the box, ready to send
+        if (fromMaterials.question) setQuestion(fromMaterials.question);
+
         // Clear the state so a page refresh doesn't reload it
         navigate(location.pathname, { replace: true, state: null });
       }
@@ -239,22 +243,11 @@ export default function AIAssistant() {
   const canAsk = Boolean(documentId) && !isLoadingDocument && !isAsking;
 
   return (
-    <div className="min-h-full bg-cream px-4 py-6 sm:px-8">
-      {/* Page heading */}
-      <div className="mb-6">
-        <div className="mb-2 flex items-center gap-2 text-brand-600">
-          <Sparkles size={22} />
-          <span className="text-sm font-medium">SmartLurn AI</span>
-        </div>
-
-        <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
-          AI Study Assistant
-        </h1>
-
-        <p className="mt-2 text-sm text-slate-500">
-          Pick a PDF and ask questions about it. Answers come from your material.
-        </p>
-      </div>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <PageHeader
+        title="AI study assistant"
+        description="Pick a PDF and ask about it. Answers come only from your material, with page numbers."
+      />
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[300px_1fr]">
         {/* Left: choose a PDF */}
@@ -363,7 +356,7 @@ export default function AIAssistant() {
               </div>
             ) : messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center text-center">
-                <Sparkles size={36} className="mb-3 text-brand-400" />
+                <MessagesSquare size={32} className="mb-3 text-brand-400" />
                 <p className="mb-4 font-medium text-slate-700">
                   What would you like to know?
                 </p>

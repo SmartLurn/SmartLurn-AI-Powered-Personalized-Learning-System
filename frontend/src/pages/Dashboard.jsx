@@ -1,257 +1,362 @@
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import api from "../config/api";
-import Loader from "../components/Loader";
-import MeetingActions from "../components/meeting/MeetingActions";
-import StudyIllustration from "../components/StudyIllustration";
 import {
-  UsersRound,
   ArrowRight,
-  Brain,
-  ClipboardList,
-  FolderOpen,
+  ArrowUpRight,
   Clock3,
+  FileText,
+  MessageSquare,
+  Send,
+  Upload,
+  UsersRound,
 } from "lucide-react";
-
+import api from "../config/api";
 import useAuth from "../hooks/useAuth";
+import MeetingActions from "../components/meeting/MeetingActions";
 
-const quickLinks = [
-  {
-    title: "AI Study Assistant",
-    description: "Ask questions and learn topics.",
-    icon: Brain,
-    path: "/ai-assistant",
-    color: "bg-brand-100 text-brand-600",
-  },
-  {
-    title: "Summaries & Quizzes",
-    description: "Revise and test your knowledge.",
-    icon: ClipboardList,
-    path: "/summaries-quizzes",
-    color: "bg-leaf-100 text-leaf-600",
-  },
-  {
-    title: "My Files",
-    description: "Access your saved materials.",
-    icon: FolderOpen,
-    path: "/study-materials",
-    color: "bg-peach text-brand-700",
-  },
-];
+const formatStudyTime = (minutes) => {
+  if (minutes < 60) return { value: minutes, unit: "min" };
+  return { value: (minutes / 60).toFixed(1), unit: "hr" };
+};
+
+// Last 7 days (oldest first) with how many study rooms were started each day
+const getWeeklyActivity = (sessions) => {
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - (6 - i));
+    return { date, label: date.toLocaleDateString("en-IN", { weekday: "short" }), count: 0 };
+  });
+
+  sessions.forEach((session) => {
+    const created = new Date(session.createdAt);
+    created.setHours(0, 0, 0, 0);
+    const day = days.find((d) => d.date.getTime() === created.getTime());
+    if (day) day.count += 1;
+  });
+
+  return days;
+};
+
+function Card({ title, action, children, className = "", style }) {
+  return (
+    <section
+      className={`rounded-2xl border border-slate-200/80 bg-white p-5 ${className}`}
+      style={style}
+    >
+      {(title || action) && (
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          {action}
+        </div>
+      )}
+      {children}
+    </section>
+  );
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [recentRooms, setRecentRooms] = useState([]);
-  const [isLoadingRooms, setIsLoadingRooms] = useState(true);
+  const [stats, setStats] = useState(null);
+  const [materials, setMaterials] = useState([]);
+  const [sessions, setSessions] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [question, setQuestion] = useState("");
 
-  const userName = user?.name?.trim()?.split(" ")[0] || "there";
+  const firstName = user?.name?.trim()?.split(" ")[0] || "there";
 
-  // Load the 3 most recent meetings (active or ended)
+  // Load everything the dashboard shows at the same time
   useEffect(() => {
-    const loadRecentRooms = async () => {
-      try {
-        const { data } = await api.get("/meetings/sessions");
+    const load = async () => {
+      const [statsResult, materialsResult, sessionsResult] = await Promise.allSettled([
+        api.get("/meetings/stats"),
+        api.get("/materials"),
+        api.get("/meetings/sessions"),
+      ]);
 
-        const rooms = data.sessions
-          .slice(0, 3)
-          .map((session) => ({
-            id: session.id,
-            name: session.title,
-            code: session.meetingID,
-            isActive: session.status === "active",
-            time: new Date(session.createdAt).toLocaleString("en-IN", {
-              day: "numeric",
-              month: "short",
-              hour: "numeric",
-              minute: "2-digit",
-            }),
-          }));
+      if (statsResult.status === "fulfilled") setStats(statsResult.value.data.stats);
+      if (materialsResult.status === "fulfilled") setMaterials(materialsResult.value.data.materials);
+      if (sessionsResult.status === "fulfilled") setSessions(sessionsResult.value.data.sessions);
 
-        setRecentRooms(rooms);
-      } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Could not load recent rooms"
-        );
-      } finally {
-        setIsLoadingRooms(false);
+      if ([statsResult, materialsResult, sessionsResult].some((r) => r.status === "rejected")) {
+        toast.error("Some dashboard data could not be loaded");
       }
+      setIsLoading(false);
     };
 
-    loadRecentRooms();
+    load();
   }, []);
 
+  const latestMaterial = materials[0];
+  const recentRooms = sessions.slice(0, 4);
+  const weeklyActivity = useMemo(() => getWeeklyActivity(sessions), [sessions]);
+  const maxPerDay = Math.max(1, ...weeklyActivity.map((d) => d.count));
+  const roomsThisWeek = weeklyActivity.reduce((sum, d) => sum + d.count, 0);
+  const studyTime = formatStudyTime(stats?.totalMinutes || 0);
+
+  const statCards = [
+    { label: "Study time", value: studyTime.value, unit: studyTime.unit, icon: Clock3, tint: "bg-sky-50 text-sky-600" },
+    { label: "Rooms joined", value: stats?.totalSessions ?? 0, icon: UsersRound, tint: "bg-brand-50 text-brand-600" },
+    { label: "Study materials", value: materials.length, icon: FileText, tint: "bg-rose-50 text-rose-600" },
+    { label: "Messages sent", value: stats?.messagesSent ?? 0, icon: MessageSquare, tint: "bg-amber-50 text-amber-600" },
+  ];
+
+  // Open the AI assistant with the latest PDF and the typed question
+  const askAI = (e) => {
+    e.preventDefault();
+    if (!latestMaterial) {
+      navigate("/study-materials", { state: { upload: true } });
+      return;
+    }
+    navigate("/ai-assistant", {
+      state: {
+        materialId: latestMaterial.id,
+        title: latestMaterial.title,
+        fileUrl: latestMaterial.fileUrl,
+        question: question.trim(),
+      },
+    });
+  };
+
   return (
-    <div className="min-h-full bg-cream px-5 py-5 sm:px-7">
-      <div className="mx-auto max-w-6xl space-y-5">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      {/* Heading */}
+      <div className="mb-6 flex animate-fade-up flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            Welcome back, {firstName}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">Here's an overview of your learning.</p>
+        </div>
 
-        {/* Welcome banner with Create / Join room */}
-        <section className="relative overflow-hidden rounded-3xl bg-leaf-500 p-6 text-white shadow-lg shadow-leaf-200 sm:p-8">
-          {/* Decorative circles */}
-          <div className="pointer-events-none absolute -left-10 -top-16 h-48 w-48 rounded-full bg-leaf-400/50" />
-          <div className="pointer-events-none absolute -bottom-20 right-1/3 h-56 w-56 rounded-full bg-leaf-600/40" />
+        <button
+          type="button"
+          onClick={() => navigate("/study-materials", { state: { upload: true } })}
+          className="press inline-flex items-center justify-center gap-2 self-start rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:self-auto"
+        >
+          <Upload size={16} />
+          Upload PDF
+        </button>
+      </div>
 
-          <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-lg">
-              <span className="inline-block rounded-full bg-brand-500 px-3 py-1 text-[11px] font-semibold tracking-wide">
-                YOUR STUDY SPACE
+      {/* Stats */}
+      <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-5">
+        {statCards.map(({ label, value, unit, icon: Icon, tint }, index) => (
+          <div
+            key={label}
+            className="card-hover animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5"
+            style={{ animationDelay: `${(index + 1) * 60}ms` }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-500 sm:text-sm">{label}</span>
+              <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${tint}`}>
+                <Icon size={16} />
               </span>
-
-              <h1 className="mt-4 text-2xl font-bold leading-tight sm:text-3xl">
-                Hey, {userName}! Travel into the world of knowledge
-              </h1>
-
-              <p className="mt-2 text-sm text-leaf-50/90">
-                Ready to make today a productive study session?
-              </p>
-
-              <div className="mt-5 rounded-2xl bg-white/95 p-3 text-slate-800">
-                <MeetingActions />
-              </div>
             </div>
-
-            <StudyIllustration className="hidden w-64 shrink-0 md:block lg:w-80" />
+            <p className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+              {isLoading ? <span className="inline-block h-8 w-14 animate-pulse rounded-md bg-slate-100" /> : value}
+              {!isLoading && unit && <span className="ml-1 text-sm font-medium text-slate-400">{unit}</span>}
+            </p>
           </div>
-        </section>
+        ))}
+      </div>
 
-        {/* Recent Rooms */}
-        <section>
-          <div className="mb-3 flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-semibold text-slate-800">
-                Recent Rooms
-              </h2>
+      <div className="grid gap-5 lg:grid-cols-3">
+        {/* Continue learning */}
+        <Card
+          title="Continue learning"
+          className="animate-fade-up lg:col-span-2"
+          style={{ animationDelay: "300ms" }}
+          action={
+            <button
+              type="button"
+              onClick={() => navigate("/study-materials")}
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-600"
+            >
+              All materials <ArrowRight size={13} />
+            </button>
+          }
+        >
+          {latestMaterial ? (
+            <ul className="space-y-2">
+              {materials.slice(0, 3).map((material, index) => (
+                <li
+                  key={material.id}
+                  className={`flex flex-col gap-3 rounded-xl border p-3.5 sm:flex-row sm:items-center ${
+                    index === 0 ? "border-slate-100 bg-slate-50/70" : "border-transparent"
+                  }`}
+                >
+                  <div className="flex min-w-0 flex-1 items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+                      <FileText size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-slate-900">{material.title}</p>
+                      <p className="mt-0.5 truncate text-xs text-slate-500">
+                        {material.subject} · {material.fileSize} · Added{" "}
+                        {new Date(material.uploadedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <a
+                      href={material.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="press inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    >
+                      Open <ArrowUpRight size={14} />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate("/ai-assistant", {
+                          state: { materialId: material.id, title: material.title, fileUrl: material.fileUrl },
+                        })
+                      }
+                      className={`press rounded-lg px-3 py-2 text-xs font-medium ${
+                        index === 0
+                          ? "bg-brand-600 text-white hover:bg-brand-700"
+                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      }`}
+                    >
+                      Ask AI
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="rounded-xl border border-dashed border-slate-200 p-5 text-sm text-slate-500">
+              {isLoading ? "Loading..." : "No materials yet. Upload a PDF to start learning from it."}
+            </p>
+          )}
+        </Card>
 
-              <p className="mt-0.5 text-xs text-slate-500">
-                Pick up where you left off.
-              </p>
-            </div>
+        {/* Ask AI */}
+        <Card title="Ask the AI assistant" className="animate-fade-up" style={{ animationDelay: "360ms" }}>
+          <p className="mb-4 text-sm leading-6 text-slate-500">
+            {latestMaterial
+              ? <>Get explanations from <span className="font-medium text-slate-700">{latestMaterial.title}</span>.</>
+              : "Upload a PDF, then ask questions about it."}
+          </p>
+          <form onSubmit={askAI} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5 pl-3 transition focus-within:border-brand-300 focus-within:ring-4 focus-within:ring-brand-50">
+            <input
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder={latestMaterial ? "Ask a question..." : "Upload a PDF first"}
+              className="min-w-0 flex-1 bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
+              aria-label="Question for the AI assistant"
+            />
+            <button
+              type="submit"
+              className="press flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white hover:bg-brand-700"
+              aria-label="Ask"
+            >
+              <Send size={15} />
+            </button>
+          </form>
+        </Card>
 
+        {/* Study rooms */}
+        <Card
+          title="Study rooms"
+          className="animate-fade-up lg:col-span-2"
+          style={{ animationDelay: "420ms" }}
+          action={
             <button
               type="button"
               onClick={() => navigate("/sessions")}
-              className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700"
+              className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-600"
             >
-              View all
-              <ArrowRight size={13} />
+              View all <ArrowRight size={13} />
             </button>
+          }
+        >
+          <div className="mb-4">
+            <MeetingActions />
           </div>
 
-          {isLoadingRooms && <Loader text="Loading recent rooms..." />}
-
-          {!isLoadingRooms && recentRooms.length === 0 && (
-            <p className="rounded-2xl border border-dashed border-brand-200 bg-white p-4 text-xs text-slate-500">
-              No rooms yet. Create one to get started.
+          {recentRooms.length === 0 ? (
+            <p className="rounded-xl border border-dashed border-slate-200 p-5 text-sm text-slate-500">
+              {isLoading ? "Loading..." : "No rooms yet. Create one and share the code with friends."}
             </p>
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {recentRooms.map((room) => {
+                const isActive = room.status === "active";
+                return (
+                  <li key={room.id}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        navigate(isActive ? `/meeting/${encodeURIComponent(room.meetingID)}` : "/sessions")
+                      }
+                      className="group flex w-full items-center gap-3 rounded-lg px-1 py-3 text-left transition hover:bg-slate-50"
+                    >
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                        <UsersRound size={16} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium text-slate-900">{room.title}</p>
+                        <p className="text-xs text-slate-500">
+                          {new Date(room.createdAt).toLocaleString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            hour: "numeric",
+                            minute: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                          isActive ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        {isActive && (
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          </span>
+                        )}
+                        {isActive ? "Live" : "Ended"}
+                      </span>
+                      <ArrowRight size={15} className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-slate-500" />
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
           )}
+        </Card>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {recentRooms.map((room) => (
-              <button
-                key={room.id}
-                type="button"
-                // Active rooms can be rejoined; ended ones open their history
-                onClick={() =>
-                  navigate(
-                    room.isActive
-                      ? `/meeting/${encodeURIComponent(room.code)}`
-                      : "/sessions"
-                  )
-                }
-                className="group rounded-2xl border border-brand-100 bg-white p-4 text-left transition hover:border-brand-200 hover:shadow-sm"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-leaf-100 text-leaf-600">
-                    <UsersRound size={17} />
-                  </div>
-
-                  <ArrowRight
-                    size={15}
-                    className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500"
-                  />
-                </div>
-
-                <div className="mt-3 flex items-center gap-2">
-                  <h3 className="truncate text-sm font-semibold text-slate-800">
-                    {room.name}
-                  </h3>
-
-                  <span
-                    className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                      room.isActive
-                        ? "border border-emerald-100 bg-emerald-50 text-emerald-600"
-                        : "bg-slate-100 text-slate-500"
-                    }`}
-                  >
-                    {room.isActive ? "Active" : "Ended"}
-                  </span>
-                </div>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  Code: {room.code}
-                </p>
-
-                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-400">
-                  <Clock3 size={12} />
-                  {room.time}
-                </div>
-              </button>
+        {/* Weekly activity */}
+        <Card title="This week" className="animate-fade-up" style={{ animationDelay: "480ms" }}>
+          <p className="-mt-2 mb-4 text-xs text-slate-500">
+            {roomsThisWeek} study {roomsThisWeek === 1 ? "room" : "rooms"} in the last 7 days
+          </p>
+          <div className="flex h-40 items-end gap-2">
+            {weeklyActivity.map((day, index) => (
+              <div key={day.label + index} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                <span className="text-[11px] font-medium text-slate-500">{day.count || ""}</span>
+                <div
+                  className={`w-full max-w-8 origin-bottom animate-grow-up rounded-md ${
+                    day.count ? "bg-brand-500" : "bg-slate-100"
+                  }`}
+                  style={{
+                    height: `${Math.max(6, (day.count / maxPerDay) * 100)}%`,
+                    animationDelay: `${500 + index * 50}ms`,
+                  }}
+                  title={`${day.count} on ${day.label}`}
+                />
+                <span className="text-[11px] text-slate-400">{day.label}</span>
+              </div>
             ))}
           </div>
-        </section>
-
-        {/* Quick Access */}
-        <section>
-          <div className="mb-3">
-            <h2 className="text-base font-semibold text-slate-800">
-              Quick Access
-            </h2>
-
-            <p className="mt-0.5 text-xs text-slate-500">
-              Your study tools, all in one place.
-            </p>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {quickLinks.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <button
-                  key={item.title}
-                  type="button"
-                  onClick={() => navigate(item.path)}
-                  className="group flex items-center gap-3 rounded-2xl border border-brand-100 bg-white p-4 text-left transition hover:border-brand-200 hover:shadow-sm"
-                >
-                  <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${item.color}`}
-                  >
-                    <Icon size={19} />
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-sm font-semibold text-slate-800">
-                      {item.title}
-                    </h3>
-
-                    <p className="mt-1 text-xs text-slate-500">
-                      {item.description}
-                    </p>
-                  </div>
-
-                  <ArrowRight
-                    size={15}
-                    className="shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500"
-                  />
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
+        </Card>
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ function CreateMeetingModal({ isOpen, onClose, onCreate, isCreating = false }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-meeting-title"
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-6 flex items-start justify-between">

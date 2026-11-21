@@ -90,7 +90,7 @@ function VideoGrid({
     const [local, remote] = allParticipants;
 
     return (
-      <div ref={containerRef} className="relative h-full w-full overflow-hidden bg-cream p-2">
+      <div ref={containerRef} className="relative h-full w-full overflow-hidden bg-canvas p-2">
         <div key={keyOf(remote)} className="h-full w-full">
           {renderTile(remote, true)}
         </div>
@@ -113,7 +113,7 @@ function VideoGrid({
     return (
       <div
         ref={containerRef}
-        className="grid h-full w-full overflow-hidden bg-cream"
+        className="grid h-full w-full overflow-hidden bg-canvas"
         style={{
           gap,
           padding: gap,
@@ -140,7 +140,7 @@ function VideoGrid({
   return (
     <div
       ref={containerRef}
-      className="flex h-full w-full flex-wrap content-center items-center justify-center overflow-hidden bg-cream"
+      className="flex h-full w-full flex-wrap content-center items-center justify-center overflow-hidden bg-canvas"
       style={{ gap, padding: gap }}
     >
       {allParticipants.map((participant) => (

@@ -34,7 +34,7 @@ export default function SessionDetailsModal({ session, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="session-details-title"
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl sm:p-7"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl animate-pop-in sm:p-7"
         onClick={(event) => event.stopPropagation()}
       >
         {/* Header */}

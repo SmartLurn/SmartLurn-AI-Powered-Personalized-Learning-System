@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../config/api";
 import Loader from "../components/Loader";
+import PageHeader from "../components/PageHeader";
 import MeetingActions from "../components/meeting/MeetingActions";
 import EmptySessions from "../components/session/EmptySessions";
 import SessionCard from "../components/session/SessionCard";
@@ -35,41 +35,32 @@ const Sessions=()=> {
   }, []);
 
   return (
-    <div className="min-h-full bg-cream px-4 py-6 sm:px-8">
-      {/* Back button */}
-      <button
-        type="button"
-        onClick={() => navigate("/dashboard")}
-        className="mb-6 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-brand-100 hover:text-brand-700"
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <PageHeader
+        title="Study rooms"
+        description="Start a room, join one with a code, or look back at past sessions."
+      />
+
+      {/* Start a new room or join one by code */}
+      <section
+        className="mb-6 animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5"
+        style={{ animationDelay: "60ms" }}
       >
-        <ArrowLeft size={18} />
-        Go to Dashboard
-      </button>
-
-      {/* Page heading */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-          Study Sessions
-        </h1>
-
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
-          Review your past and active sessions, history, participant logs,
-          and chat transcripts.
+        <h2 className="mb-1 text-sm font-semibold text-slate-900">Start or join a room</h2>
+        <p className="mb-4 text-sm text-slate-500">
+          Rooms hold up to 6 people. Share the code to invite others.
         </p>
+        <MeetingActions />
+      </section>
 
-        {/* Start a new room or join one by code */}
-        <div className="mt-5">
-          <MeetingActions />
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-dashed border-brand-200 bg-white p-4 text-center sm:p-8">
+      <div className="animate-fade-up" style={{ animationDelay: "120ms" }}>
+        <h2 className="mb-3 text-sm font-semibold text-slate-900">History</h2>
         {isLoading ? (
           <Loader text="Loading sessions..." />
         ) : sessions.length === 0 ? (
-          <EmptySessions
-            onStartMeeting={() => navigate("/dashboard")}
-          />
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
+            <EmptySessions onStartMeeting={() => navigate("/dashboard")} />
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {sessions.map((session) => (

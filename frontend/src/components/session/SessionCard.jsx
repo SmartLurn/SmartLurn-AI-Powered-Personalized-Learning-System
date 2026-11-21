@@ -35,12 +35,12 @@ function SessionCard({
   });
 
   return (
-    <article className="flex flex-col justify-between rounded-xl border border-brand-100 bg-white p-4 shadow-sm transition hover:border-brand-200 hover:shadow-md">
+    <article className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-5">
       <div>
         {/* Session ID and status */}
         <div className="flex items-center justify-between gap-2">
-          <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-            {session.id}
+          <p className="truncate font-mono text-[11px] text-slate-400">
+            {session.meetingID}
           </p>
 
           <span

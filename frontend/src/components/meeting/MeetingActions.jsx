@@ -60,10 +60,10 @@ function MeetingActions() {
         <button
           type="button"
           onClick={() => setIsCreateOpen(true)}
-          className="flex w-auto items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-brand-600 to-brand-600 px-4 py-2.5 text-xs font-medium text-white shadow-sm transition hover:from-brand-700 hover:to-brand-700"
+          className="press flex h-10 w-auto items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-700"
         >
-          <Plus size={14} />
-          Create Room
+          <Plus size={16} />
+          New room
         </button>
 
         {/* Join Room Form (Input + Join Button) */}
@@ -71,7 +71,7 @@ function MeetingActions() {
           onSubmit={handleJoinMeeting}
           className="flex items-center gap-2"
         >
-          <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-0.5 focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-100">
+          <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-50">
             <Keyboard
               size={15}
               className="shrink-0 text-slate-400"
@@ -81,15 +81,15 @@ function MeetingActions() {
               type="text"
               value={joinId}
               onChange={(event) => setJoinId(event.target.value)}
-              placeholder="Enter meeting ID"
-              aria-label="Meeting ID"
-              className="min-w-0 w-full bg-transparent py-2 text-xs text-slate-700 outline-none placeholder:text-slate-400"
+              placeholder="Enter room code"
+              aria-label="Room code"
+              className="w-full min-w-0 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
             />
           </div>
 
           <button
             type="submit"
-            className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2.5 text-xs font-medium text-white transition hover:bg-brand-700"
+            className="press inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Join
             <ArrowRight size={13} />

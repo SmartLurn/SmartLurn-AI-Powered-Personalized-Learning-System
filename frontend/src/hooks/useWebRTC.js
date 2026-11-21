@@ -272,7 +272,6 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
     const handleHostLeft = ({ seconds }) => {
       toast(`The host left. The meeting will end in ${seconds} seconds unless they return.`, {
         id: "host-left",
-        icon: "⏳",
         duration: seconds * 1000,
       });
     };

@@ -1,10 +1,11 @@
 
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { BookOpen, Upload } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../config/api";
 import Loader from "../components/Loader";
+import PageHeader from "../components/PageHeader";
 
 import MaterialFilters from "../components/materials/MaterialFilter";
 import MaterialCard from "../components/materials/MaterialCard";
@@ -13,11 +14,19 @@ import UploadMaterialModal from "../components/materials/UploadMaterialModal";
 
 export default function StudyMaterials() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [materials, setMaterials] = useState([]);
-  const [search, setSearch] = useState("");
+  // Can be filled from the top-bar search or opened from the dashboard "Upload PDF" button
+  const [search, setSearch] = useState(location.state?.search || "");
   const [selectedSubject, setSelectedSubject] = useState("All");
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(Boolean(location.state?.upload));
+
+  // A new search from the top bar while already on this page
+  useEffect(() => {
+    if (location.state?.search !== undefined) setSearch(location.state.search);
+    if (location.state?.upload) setIsUploadOpen(true);
+  }, [location.state]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Generate filter options from available materials
@@ -136,33 +145,21 @@ export default function StudyMaterials() {
   };
 
   return (
-    <div className="min-h-full bg-cream px-4 py-6 sm:px-8">
-      {/* Page heading */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="mb-2 flex items-center gap-2 text-brand-600">
-            <BookOpen size={22} />
-            <span className="text-sm font-medium">SmartLurn Library</span>
-          </div>
-
-          <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
-            Study Materials
-          </h1>
-
-          <p className="mt-2 text-sm text-slate-500">
-            Upload, organize, and explore your study resources.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setIsUploadOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3 font-medium text-white transition hover:bg-brand-700"
-        >
-          <Upload size={18} />
-          Upload Material
-        </button>
-      </div>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <PageHeader
+        title="Study materials"
+        description="Your PDFs in one place. Ask the AI about any of them or start a quiz."
+        actions={
+          <button
+            type="button"
+            onClick={() => setIsUploadOpen(true)}
+            className="press inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
+          >
+            <Upload size={16} />
+            Upload PDF
+          </button>
+        }
+      />
 
       {/* Only show search and filters when materials exist */}
       {materials.length > 0 && (

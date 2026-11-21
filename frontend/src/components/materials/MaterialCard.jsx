@@ -25,7 +25,7 @@ export default function MaterialCard({
   });
 
   return (
-    <article className="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md">
+    <article className="card-hover animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5">
       {/* File icon and type */}
       <div className="mb-4 flex items-start justify-between">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
