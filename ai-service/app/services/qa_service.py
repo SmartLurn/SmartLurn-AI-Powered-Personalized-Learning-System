@@ -1,8 +1,16 @@
+import asyncio
+
 from fastapi import HTTPException
 from google import genai
-from google.genai import types
+from google.genai import errors, types
 
-from app.config.settings import GEMINI_API_KEY, GEMINI_MODEL
+from app.config.settings import GEMINI_API_KEY, GEMINI_MODEL, GEMINI_FALLBACK_MODELS
+
+# Errors that usually go away if we wait a moment (rate limit, overloaded, timeout)
+RETRY_CODES = {429, 500, 503, 504}
+# Errors that mean "this model can't be used", so we move to the next model
+SKIP_MODEL_CODES = {404}
+ATTEMPTS_PER_MODEL = 2
 
 
 # About 100k tokens of PDF text per question
@@ -48,6 +56,55 @@ def get_client():
         _client = genai.Client(api_key=GEMINI_API_KEY)
 
     return _client
+
+
+async def generate_with_fallback(client, contents):
+    """Ask the main model; on temporary errors retry, and if a model is
+    retired or keeps failing, try the next model in GEMINI_FALLBACK_MODELS."""
+    models = list(dict.fromkeys([GEMINI_MODEL, *GEMINI_FALLBACK_MODELS]))  # no duplicates
+
+    for model in models:
+        for attempt in range(1, ATTEMPTS_PER_MODEL + 1):
+            try:
+                return await client.aio.models.generate_content(
+                    model=model,
+                    contents=contents,
+                    config=types.GenerateContentConfig(temperature=0.3),
+                )
+
+            except errors.APIError as error:
+                print(f"Gemini error ({model}, attempt {attempt}):", error.code, error.status)
+
+                if "API_KEY_INVALID" in str(error) or "API key not valid" in str(error):
+                    raise HTTPException(
+                        status_code=500,
+                        detail="The Gemini API key is invalid. Check GEMINI_API_KEY in ai-service/.env."
+                    )
+
+                if error.code in SKIP_MODEL_CODES:
+                    break  # model retired or renamed: try the next one
+
+                if error.code in RETRY_CODES and attempt < ATTEMPTS_PER_MODEL:
+                    await asyncio.sleep(attempt * 2)  # wait 2s, then try again
+                    continue
+
+                if error.code in RETRY_CODES:
+                    break  # still failing: try the next model
+
+                # Any other error (bad request etc.) won't be fixed by another model
+                raise HTTPException(
+                    status_code=502,
+                    detail="The AI could not answer this question. Please try rephrasing it."
+                )
+
+            except Exception as error:
+                print(f"Gemini error ({model}):", error)
+                break
+
+    raise HTTPException(
+        status_code=503,
+        detail="The AI is busy right now. Please try again in a minute."
+    )
 
 
 def build_context(pages: list) -> str:
@@ -100,27 +157,7 @@ async def answer_question(document: dict, question: str, history: list) -> str:
         types.Content(role="user", parts=[types.Part(text=question)])
     )
 
-    try:
-        response = await client.aio.models.generate_content(
-            model=GEMINI_MODEL,
-            contents=contents,
-            config=types.GenerateContentConfig(
-                temperature=0.3,
-            ),
-        )
-    except Exception as error:
-        print("Gemini error:", error)
-
-        if "API_KEY_INVALID" in str(error) or "API key not valid" in str(error):
-            raise HTTPException(
-                status_code=500,
-                detail="The Gemini API key is invalid. Check GEMINI_API_KEY in ai-service/.env."
-            )
-
-        raise HTTPException(
-            status_code=502,
-            detail="The AI could not answer right now. Please try again."
-        )
+    response = await generate_with_fallback(client, contents)
 
     answer = (response.text or "").strip()
 

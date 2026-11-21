@@ -28,6 +28,11 @@ app.use(express.json());
 
 const PORT=process.env.PORT || 5000;
 
+// Used by Render to check the server is up
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
 app.use("/api/auth", authRouter);
 app.use("/api/meetings/:meetingCode/participants", participantRouter);
 app.use("/api/meetings/:meetingCode/messages", messageRouter);

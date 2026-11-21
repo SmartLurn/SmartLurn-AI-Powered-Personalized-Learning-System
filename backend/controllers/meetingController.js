@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import pool from '../config/db.js';
+import { isRoomFull, MAX_PARTICIPANTS } from '../socket.js';
 
 const CODE_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -76,6 +77,13 @@ export const getMeeting = async (req, res) => {
     // In the study_sessions table an ended meeting has status 'completed'
     if (meeting.status === 'completed') {
       return res.status(400).json({ message: 'Meeting has already ended' });
+    }
+
+    // Tell people the room is full before they open the meeting page
+    if (isRoomFull(meeting.meeting_code, req.userId)) {
+      return res.status(403).json({
+        message: `This meeting is full (max ${MAX_PARTICIPANTS} people)`,
+      });
     }
 
     return res.status(200).json({

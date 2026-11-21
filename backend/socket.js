@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import pool from './config/db.js';
 
 // Everyone currently in each meeting room:
@@ -5,7 +6,39 @@ import pool from './config/db.js';
 // Kept outside the connection handler so all sockets share the same rooms.
 const rooms = new Map();
 
+// Most people allowed in one call at the same time
+export const MAX_PARTICIPANTS = 6;
+
+// True when the room already has MAX_PARTICIPANTS other people in it.
+// The same user rejoining (e.g. after a page refresh) is not counted twice.
+export const isRoomFull = (roomId, userId) => {
+    const roomParticipants = rooms.get(roomId);
+    if (!roomParticipants) return false;
+
+    const otherUsers = new Set();
+    for (const participant of roomParticipants.values()) {
+        if (participant.userId.toString() !== userId.toString()) {
+            otherUsers.add(participant.userId.toString());
+        }
+    }
+
+    return otherUsers.size >= MAX_PARTICIPANTS;
+};
+
 export function setupSocketIO(io){
+
+    // Check the login token before allowing a socket connection.
+    // The frontend sends it in socket.auth.token (see frontend/src/config/socket.js).
+    io.use((socket, next) => {
+        try {
+            const token = socket.handshake.auth?.token;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            socket.userId = decoded.id; // trusted user id, used instead of what the browser sends
+            next();
+        } catch {
+            next(new Error('Unauthorized'));
+        }
+    });
 
     io.on('connection', (socket) => {
         // Which room and user this socket belongs to 
@@ -34,14 +67,23 @@ export function setupSocketIO(io){
                     return;
                 }
 
+                // Room limit (checked right before adding, with no await in between,
+                // so two people joining at the same time can't both get the last spot)
+                if (isRoomFull(roomId, socket.userId)) {
+                    socket.emit('join-error', {
+                        message: `This meeting is full (max ${MAX_PARTICIPANTS} people)`,
+                    });
+                    return;
+                }
+
                 currentRoomId = roomId;
 
-                const isHost = meeting.host_user_id.toString() === user.id.toString();
+                const isHost = meeting.host_user_id.toString() === socket.userId.toString();
 
                 currentUser = {
                     socketId: socket.id,
-                    userId: user.id,
-                    name: user.name,
+                    userId: socket.userId,
+                    name: user?.name || 'Guest',
                     isHost,
                     audioEnabled,
                     videoEnabled,
@@ -64,13 +106,13 @@ export function setupSocketIO(io){
                 // Save the participant in the database if not already saved
                 const existingParticipant = await pool.query(
                     "SELECT 1 FROM session_participants WHERE session_id = $1 AND user_id = $2",
-                    [meeting.id, user.id]
+                    [meeting.id, socket.userId]
                 );
 
                 if (existingParticipant.rows.length === 0) {
                     await pool.query(
                         "INSERT INTO session_participants (session_id, user_id) VALUES ($1, $2)",
-                        [meeting.id, user.id]
+                        [meeting.id, socket.userId]
                     );
                 }
 
@@ -156,7 +198,7 @@ export function setupSocketIO(io){
 
                 if (meetings.rows.length > 0 && meetings.rows[0].status !== 'completed') {
                     const meetingId = meetings.rows[0].id;
-                    const senderId = message.senderId;
+                    const senderId = socket.userId; // from the token, not the browser
 
                     await pool.query(
                         "INSERT INTO session_messages (session_id, user_id, content) VALUES ($1, $2, $3)",
@@ -167,6 +209,7 @@ export function setupSocketIO(io){
                     // (the sender's chat already shows their own message)
                     socket.to(roomId).emit('receive-message', {
                         ...message,
+                        senderId,
                         senderSocketId: socket.id,
                     });
                 }

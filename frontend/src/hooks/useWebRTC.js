@@ -3,9 +3,24 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import toast from "react-hot-toast";
 import { socket } from "../config/socket";
 
-// Free public STUN server that helps browsers find a direct route to each other
+// STUN helps browsers find a direct route to each other.
+// TURN (optional) relays the video when a network blocks direct connections
+// (some college/office Wi-Fi and mobile data). Set it in .env, no code change needed.
+const TURN_URL = import.meta.env.VITE_TURN_URL;
+
 const ICE_SERVERS = {
-  iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    ...(TURN_URL
+      ? [
+          {
+            urls: TURN_URL.split(",").map((url) => url.trim()),
+            username: import.meta.env.VITE_TURN_USERNAME,
+            credential: import.meta.env.VITE_TURN_CREDENTIAL,
+          },
+        ]
+      : []),
+  ],
 };
 
 const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
@@ -203,8 +218,17 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
     socket.on("user-toggled-audio", handleToggleAudio);
     socket.on("user-toggled-video", handleToggleVideo);
     socket.on("user-disconnected", handleUserDisconnected);
+    // The server refused the connection (missing or expired login token)
+    const handleConnectError = (error) => {
+      if (error.message === "Unauthorized") {
+        toast.error("Your session has expired. Please log in again.");
+        onMeetingEnded?.();
+      }
+    };
+
     socket.on("meeting-ended", handleMeetingEnded);
     socket.on("join-error", handleJoinError);
+    socket.on("connect_error", handleConnectError);
 
     // Get the camera first so it is shared with everyone we connect to
     const start = async () => {
@@ -233,6 +257,7 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
       socket.off("user-disconnected", handleUserDisconnected);
       socket.off("meeting-ended", handleMeetingEnded);
       socket.off("join-error", handleJoinError);
+      socket.off("connect_error", handleConnectError);
 
       peersRef.current.forEach((peer) => peer.close());
       peersRef.current.clear();
