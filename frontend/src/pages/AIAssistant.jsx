@@ -72,7 +72,6 @@ export default function AIAssistant() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const messagesBoxRef = useRef(null);
-  const chatRef = useRef(null);
 
   const [materials, setMaterials] = useState([]);
   const [isLoadingMaterials, setIsLoadingMaterials] = useState(true);
@@ -106,10 +105,6 @@ export default function AIAssistant() {
   const selectSource = async (source) => {
     setSelected(source);
 
-    // Phones show the list above the chat: scroll down to the chat
-    if (window.innerWidth < 1024) {
-      chatRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
     setDocumentId(null);
     setMessages([]);
     setIsLoadingDocument(true);
@@ -271,7 +266,7 @@ export default function AIAssistant() {
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 lg:grid-cols-[272px_1fr] xl:grid-cols-[272px_1fr_272px]">
         {/* Left: materials */}
         <aside
-          className="flex animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-surface lg:min-h-0"
+          className="hidden animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-surface lg:flex lg:min-h-0"
           style={{ animationDelay: "60ms" }}
         >
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5">
@@ -337,7 +332,6 @@ export default function AIAssistant() {
 
         {/* Middle: chat */}
         <section
-          ref={chatRef}
           className="flex h-[78dvh] min-h-[440px] scroll-mt-20 animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-surface lg:h-auto lg:min-h-0"
           style={{ animationDelay: "120ms" }}
         >
@@ -367,6 +361,38 @@ export default function AIAssistant() {
             )}
           </div>
 
+          {/* Phones: small material picker and upload, inside the chat */}
+          <div className="flex items-center gap-2 border-b border-slate-100 px-4 py-2.5 lg:hidden">
+            <select
+              value={selected?.material ? selected.key : ""}
+              onChange={(e) => {
+                const material = materials.find((m) => `material-${m.id}` === e.target.value);
+                if (material) selectSource({ key: e.target.value, title: material.title, material });
+              }}
+              disabled={isLoadingDocument || isLoadingMaterials}
+              aria-label="Choose a material"
+              className="h-9 min-w-0 flex-1 rounded-lg border border-slate-200 bg-surface px-2.5 text-sm text-slate-700 outline-none focus:border-pop-400"
+            >
+              <option value="" disabled>
+                {isLoadingMaterials ? "Loading materials..." : materials.length ? "Choose a material..." : "No materials yet"}
+              </option>
+              {materials.map((material) => (
+                <option key={material.id} value={`material-${material.id}`}>
+                  {material.title}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoadingDocument}
+              className="press inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+            >
+              <Upload size={14} />
+              PDF
+            </button>
+          </div>
+
           {/* Messages */}
           <div ref={messagesBoxRef} className="flex-1 space-y-5 overflow-y-auto px-5 py-6">
             {isLoadingDocument ? (
@@ -378,7 +404,7 @@ export default function AIAssistant() {
                 </div>
                 <p className="font-medium text-slate-800">Ask anything about your notes</p>
                 <p className="mt-1 max-w-sm text-sm text-slate-500">
-                  Pick a material on the left, or upload a PDF just for this chat.
+                  Pick one of your materials, or upload a PDF just for this chat.
                 </p>
               </div>
             ) : messages.length === 0 ? (
@@ -405,13 +431,13 @@ export default function AIAssistant() {
 
                 return isUser ? (
                   <div key={index} className="flex animate-fade-up justify-end">
-                    <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-brand-600 px-4 py-2.5 text-sm leading-relaxed text-white">
+                    <div className="max-w-[80%] whitespace-pre-wrap rounded-2xl rounded-br-md bg-cta px-4 py-2.5 text-sm leading-relaxed text-on-cta">
                       {message.content}
                     </div>
                   </div>
                 ) : (
                   <div key={index} className="flex animate-fade-up gap-3">
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-cta text-on-cta">
                       <GraduationCap size={15} />
                     </div>
                     <div
@@ -428,7 +454,7 @@ export default function AIAssistant() {
 
             {isAsking && (
               <div className="flex animate-fade-up gap-3">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-cta text-on-cta">
                   <GraduationCap size={15} />
                 </div>
                 <div className="flex items-center gap-1 rounded-2xl rounded-tl-md border border-slate-200/80 px-4 py-3.5" aria-label="Thinking">
@@ -458,7 +484,7 @@ export default function AIAssistant() {
                 type="submit"
                 disabled={!canAsk || !question.trim()}
                 aria-label="Send question"
-                className="press flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white hover:bg-brand-700 disabled:opacity-40"
+                className="press flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cta text-on-cta hover:bg-cta-hover disabled:opacity-40"
               >
                 <Send size={16} />
               </button>

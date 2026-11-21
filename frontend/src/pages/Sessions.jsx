@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Hash, MessageSquare, UsersRound, Video } from "lucide-react";
 import api from "../config/api";
 import Loader from "../components/Loader";
 import PageHeader from "../components/PageHeader";
@@ -46,11 +47,30 @@ const Sessions=()=> {
         className="mb-6 animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5"
         style={{ animationDelay: "60ms" }}
       >
-        <h2 className="mb-1 text-sm font-semibold text-slate-900">Start or join a room</h2>
-        <p className="mb-4 text-sm text-slate-500">
-          Rooms hold up to 6 people. Share the code to invite others.
-        </p>
-        <MeetingActions />
+        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <h2 className="mb-1 text-sm font-semibold text-slate-900">Start or join a room</h2>
+            <p className="mb-4 text-sm text-slate-500">
+              Rooms hold up to 6 people. Share the code to invite others.
+            </p>
+            <MeetingActions />
+          </div>
+
+          {/* What a room includes */}
+          <ul className="grid shrink-0 grid-cols-2 gap-2 rounded-xl bg-[#e8dcc4] p-3 text-[#1f3d2b] sm:grid-cols-4 md:grid-cols-2">
+            {[
+              { icon: UsersRound, text: "Up to 6 people" },
+              { icon: Video, text: "Video & audio" },
+              { icon: MessageSquare, text: "Live chat" },
+              { icon: Hash, text: "Join with a code" },
+            ].map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-center gap-2 rounded-lg bg-[#f3ead6] px-3 py-2 text-xs font-medium">
+                <Icon size={14} className="shrink-0" />
+                {text}
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
       <div className="animate-fade-up" style={{ animationDelay: "120ms" }}>

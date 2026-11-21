@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Upload, FileText, LoaderCircle } from "lucide-react";
 
 export default function UploadMaterialModal({
@@ -55,16 +56,16 @@ export default function UploadMaterialModal({
     onClose();
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="upload-material-title"
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface p-6 shadow-xl animate-pop-in"
+        className="max-h-[88dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-surface p-6 shadow-xl animate-sheet-up sm:max-h-[90vh] sm:animate-pop-in sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-6 flex items-start justify-between">
@@ -229,7 +230,7 @@ export default function UploadMaterialModal({
             <button
               type="submit"
               disabled={isUploading}
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center gap-2 rounded-xl bg-cta px-5 py-3 text-sm font-medium text-on-cta hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isUploading ? (
                 <LoaderCircle size={16} className="animate-spin" />
@@ -241,6 +242,7 @@ export default function UploadMaterialModal({
           </div>
         </form>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

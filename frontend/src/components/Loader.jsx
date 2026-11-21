@@ -15,7 +15,7 @@ const Loader = ({ text = "Loading...", fullScreen = false }) => {
         <span className="absolute inset-0 animate-spin rounded-full border-2 border-brand-100 border-t-pop-500" />
         {/* Logo in the middle, gently pulsing */}
         <span
-          className={`flex animate-pulse items-center justify-center rounded-lg bg-brand-600 text-white ${
+          className={`flex animate-pulse items-center justify-center rounded-lg bg-cta text-on-cta ${
             fullScreen ? "h-9 w-9" : "h-6 w-6 rounded-md"
           }`}
         >

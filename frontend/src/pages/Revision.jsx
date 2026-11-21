@@ -63,7 +63,7 @@ export default function Revision() {
           <button
             type="button"
             onClick={comingSoon}
-            className="press inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
+            className="press inline-flex items-center gap-2 rounded-lg bg-cta px-4 py-2.5 text-sm font-medium text-on-cta hover:bg-cta-hover"
           >
             <Plus size={16} /> Add task
           </button>
@@ -81,7 +81,7 @@ export default function Revision() {
               onClick={() => setSelectedDay(index)}
               className={`press flex flex-col items-center gap-1 rounded-xl border py-3 transition ${
                 isSelected
-                  ? "border-brand-600 bg-brand-600 text-white shadow-sm"
+                  ? "border-brand-600 bg-cta text-on-cta shadow-sm"
                   : "border-slate-200/80 bg-surface text-slate-700 hover:border-brand-200"
               }`}
             >
@@ -132,7 +132,7 @@ export default function Revision() {
                 >
                   <span
                     className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition ${
-                      task.done ? "border-brand-600 bg-brand-600 text-white" : "border-slate-300 group-hover:border-brand-400"
+                      task.done ? "border-brand-600 bg-cta text-on-cta" : "border-slate-300 group-hover:border-brand-400"
                     }`}
                   >
                     {task.done && <Check size={13} strokeWidth={3} className="animate-pop-in" />}

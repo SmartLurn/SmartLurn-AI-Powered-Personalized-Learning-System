@@ -208,7 +208,7 @@ const Settings = () => {
               <button
                 type="submit"
                 disabled={isChangingPassword}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-cta px-5 py-3 text-sm font-medium text-on-cta transition hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isChangingPassword && <LoaderCircle size={16} className="animate-spin" />}
                 {isChangingPassword ? "Updating..." : "Update password"}

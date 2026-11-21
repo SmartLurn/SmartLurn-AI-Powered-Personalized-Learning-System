@@ -212,7 +212,7 @@ function Profile() {
               <button
                 type="submit"
                 disabled={!hasChanges || isSaving}
-                className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-cta px-5 py-3 text-sm font-medium text-on-cta transition hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSaving ? (
                   <LoaderCircle size={16} className="animate-spin" />

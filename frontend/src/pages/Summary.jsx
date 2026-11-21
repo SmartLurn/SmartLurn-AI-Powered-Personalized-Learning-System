@@ -73,7 +73,7 @@ export default function Summary() {
             type="button"
             onClick={() => setTab(id)}
             className={`press inline-flex items-center gap-2 rounded-md px-3.5 py-2 text-sm font-medium transition ${
-              tab === id ? "bg-brand-600 text-white shadow-sm" : "text-slate-600 hover:bg-slate-50"
+              tab === id ? "bg-cta text-on-cta shadow-sm" : "text-slate-600 hover:bg-slate-50"
             }`}
           >
             <Icon size={16} />
@@ -136,7 +136,7 @@ export default function Summary() {
             <button
               type="button"
               onClick={comingSoon}
-              className="press flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-600 text-sm font-medium text-white hover:bg-brand-700"
+              className="press flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-cta text-sm font-medium text-on-cta hover:bg-cta-hover"
             >
               <Wand2 size={16} />
               {tab === "quiz" ? "Generate quiz" : "Generate summary"}
@@ -210,7 +210,7 @@ export default function Summary() {
               <button
                 type="button"
                 onClick={() => (current === SAMPLE_QUESTIONS.length - 1 ? comingSoon() : setCurrent((c) => c + 1))}
-                className="press inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700"
+                className="press inline-flex items-center gap-1.5 rounded-lg bg-cta px-4 py-2 text-sm font-medium text-on-cta hover:bg-cta-hover"
               >
                 {current === SAMPLE_QUESTIONS.length - 1 ? "Finish" : "Next"} <ArrowRight size={15} />
               </button>
@@ -245,7 +245,7 @@ export default function Summary() {
               <button type="button" onClick={comingSoon} className="press rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
                 Copy summary
               </button>
-              <button type="button" onClick={() => setTab("quiz")} className="press rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700">
+              <button type="button" onClick={() => setTab("quiz")} className="press rounded-lg bg-cta px-4 py-2 text-sm font-medium text-on-cta hover:bg-cta-hover">
                 Make a quiz from this
               </button>
             </div>

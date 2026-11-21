@@ -153,7 +153,7 @@ export default function StudyMaterials() {
           <button
             type="button"
             onClick={() => setIsUploadOpen(true)}
-            className="press inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-700"
+            className="press inline-flex items-center justify-center gap-2 rounded-lg bg-cta px-4 py-2.5 text-sm font-medium text-on-cta hover:bg-cta-hover"
           >
             <Upload size={16} />
             Upload PDF

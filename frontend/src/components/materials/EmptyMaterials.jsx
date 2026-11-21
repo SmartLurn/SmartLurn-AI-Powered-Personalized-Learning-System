@@ -20,7 +20,7 @@ export default function EmptyMaterials({ onUpload }) {
       <button
         type="button"
         onClick={onUpload}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 font-medium text-white transition hover:bg-brand-700"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-cta px-5 py-3 font-medium text-on-cta transition hover:bg-cta-hover"
       >
         <Upload size={18} />
         Upload Your First Material

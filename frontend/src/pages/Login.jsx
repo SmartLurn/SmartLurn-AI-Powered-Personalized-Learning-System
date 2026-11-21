@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
@@ -6,7 +6,6 @@ import useAuth from "../hooks/useAuth";
 import Loader from "../components/Loader";
 import Logo from "../components/Logo";
 import LoginIllustration from "../components/LoginIllustration";
-import WelcomeSplash from "../components/WelcomeSplash";
 import ThemeToggle from "../components/ThemeToggle";
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -58,21 +57,15 @@ const Login = ({ mode = "register" }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // After a successful login/sign-up: show the welcome screen, then go to the dashboard
-  const [welcome, setWelcome] = useState(null); // { name, isNewUser }
-  const [isSplashDone, setIsSplashDone] = useState(false);
-  const finishSplash = useCallback(() => setIsSplashDone(true), []);
-
-  if (welcome && !isSplashDone) {
-    return <WelcomeSplash name={welcome.name} isNewUser={welcome.isNewUser} onDone={finishSplash} />;
-  }
+  // New accounts get "Welcome to SmartLurn" on the dashboard intro
+  const [isNewUser, setIsNewUser] = useState(false);
 
   if (isAuthLoading) {
     return <Loader text="Checking authentication..." fullScreen />;
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/dashboard" replace state={isNewUser ? { isNewUser: true } : undefined} />;
   }
 
   const handleSubmit = async (e) => {
@@ -81,13 +74,13 @@ const Login = ({ mode = "register" }) => {
 
     try {
       if (isRegisterMode) {
-        const data = await signup(name, email, password);
-        setWelcome({ name: data?.user?.name || name, isNewUser: true });
+        setIsNewUser(true);
+        await signup(name, email, password);
       } else {
-        const data = await login(email, password);
-        setWelcome({ name: data?.user?.name, isNewUser: false });
+        await login(email, password);
       }
     } catch (err) {
+      setIsNewUser(false);
       toast.error(err.message || "Something went wrong");
     } finally {
       setIsSubmitting(false);
@@ -95,7 +88,7 @@ const Login = ({ mode = "register" }) => {
   };
 
   return (
-    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-950 p-4 sm:p-8">
+    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-gradient-to-br from-[#1f3d2b] via-[#183022] to-[#0a150f] p-4 sm:p-8">
       <BackgroundShapes />
 
       {/* Main card */}
@@ -188,13 +181,12 @@ const Login = ({ mode = "register" }) => {
                     </Link>
                   </span>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => toast("Password reset is coming soon", { id: "forgot" })}
-                    className="text-xs font-medium text-slate-500 transition hover:text-brand-700"
-                  >
-                    Forgot password?
-                  </button>
+                  <span className="text-xs text-slate-500">
+                    New here?{" "}
+                    <Link to="/register" className="font-medium text-brand-600 hover:text-brand-800">
+                      Create account
+                    </Link>
+                  </span>
                 )}
 
                 <button

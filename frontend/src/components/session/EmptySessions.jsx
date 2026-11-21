@@ -20,7 +20,7 @@ const EmptySessions=({ onStartMeeting })=> {
       <button
         type="button"
         onClick={onStartMeeting}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-700"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-cta px-5 py-3 text-sm font-semibold text-on-cta transition hover:bg-cta-hover"
       >
         <Video size={18} />
         Start a Meeting

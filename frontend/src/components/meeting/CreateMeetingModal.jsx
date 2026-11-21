@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Plus, LoaderCircle } from "lucide-react";
 
 const MAX_TITLE_LENGTH = 255; // same limit as the study_sessions.title column
@@ -21,16 +22,16 @@ function CreateMeetingModal({ isOpen, onClose, onCreate, isCreating = false }) {
     onClose();
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={handleClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-meeting-title"
-        className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl animate-pop-in"
+        className="w-full max-w-md rounded-t-2xl bg-surface p-6 shadow-xl animate-sheet-up sm:animate-pop-in sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-6 flex items-start justify-between">
@@ -91,7 +92,7 @@ function CreateMeetingModal({ isOpen, onClose, onCreate, isCreating = false }) {
             <button
               type="submit"
               disabled={isCreating}
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center gap-2 rounded-xl bg-cta px-5 py-3 text-sm font-medium text-on-cta hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isCreating ? (
                 <>
@@ -108,7 +109,8 @@ function CreateMeetingModal({ isOpen, onClose, onCreate, isCreating = false }) {
           </div>
         </form>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }
 

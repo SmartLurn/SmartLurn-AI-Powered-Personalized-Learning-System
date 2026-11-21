@@ -103,7 +103,7 @@ function SessionCard({
           <button
             type="button"
             onClick={() => onRejoin(session)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-700 shadow-sm"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-cta px-3 py-1.5 text-xs font-medium text-on-cta transition hover:bg-cta-hover shadow-sm"
           >
             <RotateCcw size={14} />
             Rejoin

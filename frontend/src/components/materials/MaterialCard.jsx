@@ -78,7 +78,7 @@ export default function MaterialCard({ material, onAskAI, onOpenPDF, onStartQuiz
         <button
           type="button"
           onClick={() => onAskAI(material)}
-          className="press flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700"
+          className="press flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-cta px-3 py-2 text-sm font-medium text-on-cta hover:bg-cta-hover"
         >
           <MessageSquareText size={15} />
           Ask AI

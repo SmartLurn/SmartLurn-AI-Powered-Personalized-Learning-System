@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
 import {
   ArrowRight,
@@ -14,6 +15,10 @@ import {
 import api from "../config/api";
 import useAuth from "../hooks/useAuth";
 import MeetingActions from "../components/meeting/MeetingActions";
+import WelcomeSplash from "../components/WelcomeSplash";
+
+// The intro shows at least this long, and until the dashboard data has loaded
+const INTRO_MIN_MS = 1100;
 
 const formatStudyTime = (minutes) => {
   if (minutes < 60) return { value: minutes, unit: "min" };
@@ -57,15 +62,17 @@ function SkeletonRows({ count = 3 }) {
   );
 }
 
-function Card({ title, action, children, className = "", style }) {
+// tone="beige" = sand card with forest text in both themes
+function Card({ title, action, children, className = "", style, tone }) {
+  const isBeige = tone === "beige";
   return (
     <section
-      className={`rounded-2xl border border-slate-200/80 bg-surface p-5 ${className}`}
+      className={`rounded-2xl border p-5 ${isBeige ? "border-transparent bg-[#e8dcc4]" : "border-slate-200/80 bg-surface"} ${className}`}
       style={style}
     >
       {(title || action) && (
         <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
+          <h2 className={`text-sm font-semibold ${isBeige ? "text-[#1f3d2b]" : "text-slate-900"}`}>{title}</h2>
           {action}
         </div>
       )}
@@ -77,6 +84,7 @@ function Card({ title, action, children, className = "", style }) {
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [stats, setStats] = useState(null);
   const [materials, setMaterials] = useState([]);
@@ -85,6 +93,15 @@ export default function Dashboard() {
   const [question, setQuestion] = useState("");
 
   const firstName = user?.name?.trim()?.split(" ")[0] || "there";
+
+  // Intro animation every time the dashboard opens: stays at least INTRO_MIN_MS
+  // and until the data is ready, then fades out
+  const [isMinTimeDone, setIsMinTimeDone] = useState(false);
+  const [isIntroGone, setIsIntroGone] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsMinTimeDone(true), INTRO_MIN_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Load everything the dashboard shows at the same time
   useEffect(() => {
@@ -107,6 +124,13 @@ export default function Dashboard() {
 
     load();
   }, []);
+
+  const isIntroLeaving = isMinTimeDone && !isLoading;
+  useEffect(() => {
+    if (!isIntroLeaving) return;
+    const timer = setTimeout(() => setIsIntroGone(true), 450);
+    return () => clearTimeout(timer);
+  }, [isIntroLeaving]);
 
   const latestMaterial = materials[0];
   const recentRooms = sessions.slice(0, 4);
@@ -141,6 +165,18 @@ export default function Dashboard() {
   };
 
   return (
+    <>
+    {!isIntroGone &&
+      createPortal(
+        <div
+          className={`fixed inset-0 z-[70] transition-opacity duration-500 ${
+            isIntroLeaving ? "pointer-events-none opacity-0" : "opacity-100"
+          }`}
+        >
+          <WelcomeSplash name={user?.name} isNewUser={Boolean(location.state?.isNewUser)} />
+        </div>,
+        document.body
+      )}
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       {/* Heading */}
       <div className="mb-6 flex animate-fade-up flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -238,7 +274,7 @@ export default function Dashboard() {
                       }
                       className={`press rounded-lg px-3 py-2 text-xs font-medium ${
                         index === 0
-                          ? "bg-brand-600 text-white hover:bg-brand-700"
+                          ? "bg-cta text-on-cta hover:bg-cta-hover"
                           : "border border-slate-200 bg-surface text-slate-700 hover:bg-slate-50"
                       }`}
                     >
@@ -258,25 +294,25 @@ export default function Dashboard() {
         </Card>
 
         {/* Ask AI */}
-        <Card title="Ask the AI assistant" className="animate-fade-up" style={{ animationDelay: "360ms" }}>
-          <p className="mb-4 text-sm leading-6 text-slate-500">
+        <Card title="Ask the AI assistant" tone="beige" className="animate-fade-up" style={{ animationDelay: "360ms" }}>
+          <p className="mb-4 text-sm leading-6 text-[#5a5646]">
             {isLoading
               ? "Loading your materials..."
               : latestMaterial
-              ? <>Get explanations from <span className="font-medium text-slate-700">{latestMaterial.title}</span>.</>
+              ? <>Get explanations from <span className="font-medium text-[#1f3d2b]">{latestMaterial.title}</span>.</>
               : "Upload a PDF, then ask questions about it."}
           </p>
-          <form onSubmit={askAI} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-surface p-1.5 pl-3 transition focus-within:border-pop-400 focus-within:ring-4 focus-within:ring-pop-100">
+          <form onSubmit={askAI} className="flex items-center gap-2 rounded-xl border border-[#d6c9ae] bg-[#fffcf6] p-1.5 pl-3 transition focus-within:border-pop-400 focus-within:ring-4 focus-within:ring-pop-100">
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder={isLoading || latestMaterial ? "Ask a question..." : "Upload a PDF first"}
-              className="min-w-0 flex-1 bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
+              className="min-w-0 flex-1 bg-transparent text-sm text-[#1d1f18] outline-none placeholder:text-[#9f9885]"
               aria-label="Question for the AI assistant"
             />
             <button
               type="submit"
-              className="press flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-600 text-white hover:bg-brand-700"
+              className="press flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#1f3d2b] text-white hover:bg-[#183022]"
               aria-label="Ask"
             >
               <Send size={15} />
@@ -384,5 +420,6 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
+    </>
   );
 }

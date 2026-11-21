@@ -174,7 +174,7 @@ function ControlPanel({
         >
           <Users size={20} />
 
-          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-bold text-white">
+          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-cta px-1 text-[10px] font-bold text-on-cta">
             {participantCount}
           </span>
         </button>

@@ -3,10 +3,10 @@ import { GraduationCap } from "lucide-react";
 
 const SPLASH_MS = 1200;
 
-// Short welcome screen shown right after logging in or signing up,
-// then onDone() moves on to the dashboard.
+// Short welcome screen shown each time the dashboard opens.
 export default function WelcomeSplash({ name, isNewUser = false, onDone }) {
   useEffect(() => {
+    if (!onDone) return; // the dashboard decides when to hide it
     const timer = setTimeout(onDone, SPLASH_MS);
     return () => clearTimeout(timer);
   }, [onDone]);
@@ -15,7 +15,7 @@ export default function WelcomeSplash({ name, isNewUser = false, onDone }) {
 
   return (
     <div
-      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-950 px-6 text-center text-white"
+      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#1f3d2b] via-[#183022] to-[#0a150f] px-6 text-center text-white"
       role="status"
     >
       {/* Soft expanding rings behind the logo */}
@@ -23,7 +23,7 @@ export default function WelcomeSplash({ name, isNewUser = false, onDone }) {
       <span className="absolute h-40 w-40 animate-ping rounded-full bg-white/10" style={{ animationDuration: "1.6s" }} />
       <span className="absolute h-64 w-64 rounded-full border border-white/10" />
 
-      <div className="relative flex h-16 w-16 animate-pop-in items-center justify-center rounded-2xl bg-[#fffcf6] text-brand-700 shadow-xl shadow-black/30">
+      <div className="relative flex h-16 w-16 animate-pop-in items-center justify-center rounded-2xl bg-[#fffcf6] text-[#1f3d2b] shadow-xl shadow-black/30">
         <GraduationCap size={32} />
       </div>
 
@@ -31,7 +31,7 @@ export default function WelcomeSplash({ name, isNewUser = false, onDone }) {
         {isNewUser ? "Welcome to SmartLurn" : "Welcome back"}
         {firstName ? `, ${firstName}` : ""}
       </h1>
-      <p className="relative mt-2 animate-fade-up text-sm text-brand-100" style={{ animationDelay: "250ms" }}>
+      <p className="relative mt-2 animate-fade-up text-sm text-[#dbe8de]" style={{ animationDelay: "250ms" }}>
         Getting your study space ready...
       </p>
 

@@ -60,7 +60,7 @@ function MeetingActions() {
         <button
           type="button"
           onClick={() => setIsCreateOpen(true)}
-          className="press flex h-10 w-auto items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 text-sm font-medium text-white hover:bg-brand-700"
+          className="press flex h-10 w-auto items-center justify-center gap-2 rounded-lg bg-cta px-4 text-sm font-medium text-on-cta hover:bg-cta-hover"
         >
           <Plus size={16} />
           New room

@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X, MessageCircle, Users, CalendarDays, Clock3 } from "lucide-react";
 import SessionChatTranscript from "./SessionChatTranscript";
 import SessionParticipantsLog from "./SessionParticipantsLog";
@@ -25,16 +26,16 @@ export default function SessionDetailsModal({ session, onClose }) {
     hour12: true,
   });
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="session-details-title"
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-surface p-5 shadow-2xl animate-pop-in sm:p-7"
+        className="max-h-[88dvh] w-full max-w-2xl overflow-y-auto rounded-t-2xl bg-surface p-5 shadow-2xl animate-sheet-up sm:max-h-[90vh] sm:animate-pop-in sm:rounded-2xl sm:p-7"
         onClick={(event) => event.stopPropagation()}
       >
         {/* Header */}
@@ -133,6 +134,7 @@ export default function SessionDetailsModal({ session, onClose }) {
           )}
         </div>
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

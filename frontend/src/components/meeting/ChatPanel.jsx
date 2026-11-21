@@ -90,7 +90,7 @@ function ChatPanel({
                 <div
                   className={`max-w-[90%] break-words rounded-2xl px-3 py-2 text-sm ${
                     isMe
-                      ? "rounded-br-sm bg-brand-600 text-white"
+                      ? "rounded-br-sm bg-cta text-on-cta"
                       : "rounded-bl-sm bg-slate-100 text-slate-700"
                   }`}
                 >
@@ -120,7 +120,7 @@ function ChatPanel({
         <button
           type="submit"
           disabled={!text.trim()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cta text-on-cta transition hover:bg-cta-hover disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Send message"
         >
           <Send size={17} />
