@@ -3,8 +3,8 @@ import { BookOpen, Upload } from "lucide-react";
 
 export default function EmptyMaterials({ onUpload }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-violet-200 bg-white px-6 py-16 text-center">
-      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-brand-200 bg-white px-6 py-16 text-center">
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 text-brand-600">
         <BookOpen size={32} />
       </div>
 
@@ -20,7 +20,7 @@ export default function EmptyMaterials({ onUpload }) {
       <button
         type="button"
         onClick={onUpload}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 font-medium text-white transition hover:bg-violet-700"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 font-medium text-white transition hover:bg-brand-700"
       >
         <Upload size={18} />
         Upload Your First Material

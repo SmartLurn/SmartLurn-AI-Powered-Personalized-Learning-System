@@ -94,14 +94,14 @@ export default function SessionDetailsModal({ session, onClose }) {
         </div>
 
         {/* Tabs */}
-        <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-violet-50 p-1">
+        <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-brand-50 p-1">
           <button
             type="button"
             onClick={() => setActiveTab("chat")}
             className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium transition ${
               activeTab === "chat"
-                ? "bg-white text-violet-700 shadow-sm"
-                : "text-slate-500 hover:text-violet-700"
+                ? "bg-white text-brand-700 shadow-sm"
+                : "text-slate-500 hover:text-brand-700"
             }`}
           >
             <MessageCircle size={17} />
@@ -113,8 +113,8 @@ export default function SessionDetailsModal({ session, onClose }) {
             onClick={() => setActiveTab("participants")}
             className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium transition ${
               activeTab === "participants"
-                ? "bg-white text-violet-700 shadow-sm"
-                : "text-slate-500 hover:text-violet-700"
+                ? "bg-white text-brand-700 shadow-sm"
+                : "text-slate-500 hover:text-brand-700"
             }`}
           >
             <Users size={17} />

@@ -1,1 +1,36 @@
 @import "tailwindcss";
+
+/* SmartLurn theme: warm orange + leafy green on cream */
+@theme {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+
+  /* Orange: buttons, active states, highlights */
+  --color-brand-50: #fff5ec;
+  --color-brand-100: #ffe8d4;
+  --color-brand-200: #fdd0a8;
+  --color-brand-300: #f9b177;
+  --color-brand-400: #f2954b;
+  --color-brand-500: #e97f2e;
+  --color-brand-600: #c75b17;
+  --color-brand-700: #a24813;
+  --color-brand-800: #803a15;
+  --color-brand-900: #693115;
+  --color-brand-950: #3a1708;
+
+  /* Green: banners, illustrations, secondary accents */
+  --color-leaf-50: #f1f7ee;
+  --color-leaf-100: #e1eed9;
+  --color-leaf-200: #c4ddb6;
+  --color-leaf-300: #9fc58b;
+  --color-leaf-400: #7aaa64;
+  --color-leaf-500: #5e8f4a;
+  --color-leaf-600: #4a753a;
+  --color-leaf-700: #3c5d31;
+  --color-leaf-800: #324b2b;
+  --color-leaf-900: #2a3f25;
+  --color-leaf-950: #142211;
+
+  /* Cream page and panel backgrounds */
+  --color-cream: #fff7ee;
+  --color-peach: #fdebd8;
+}

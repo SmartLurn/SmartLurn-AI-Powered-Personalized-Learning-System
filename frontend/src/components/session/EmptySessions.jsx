@@ -3,8 +3,8 @@ import { Video, CalendarDays } from "lucide-react";
 
 const EmptySessions=({ onStartMeeting })=> {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-violet-100 bg-white px-6 py-16 text-center shadow-sm">
-      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-brand-100 bg-white px-6 py-16 text-center shadow-sm">
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 text-brand-600">
         <CalendarDays size={32} />
       </div>
 
@@ -20,7 +20,7 @@ const EmptySessions=({ onStartMeeting })=> {
       <button
         type="button"
         onClick={onStartMeeting}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-700"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-700"
       >
         <Video size={18} />
         Start a Meeting

@@ -76,7 +76,7 @@ function ControlPanel({
         <button
           type="button"
           onClick={copyMeetingId}
-          className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+          className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
           title="Copy meeting link"
         >
           {copied ? <Check size={16} /> : <Copy size={16} />}
@@ -140,7 +140,7 @@ function ControlPanel({
           aria-pressed={isChatOpen}
           className={`relative ${controlButtonClass} ${
             isChatOpen
-              ? "bg-violet-100 text-violet-700"
+              ? "bg-brand-100 text-brand-700"
               : "bg-slate-100 text-slate-700 hover:bg-slate-200"
           }`}
         >
@@ -167,13 +167,13 @@ function ControlPanel({
           aria-pressed={isParticipantsOpen}
           className={`relative ${controlButtonClass} ${
             isParticipantsOpen
-              ? "bg-violet-100 text-violet-700"
+              ? "bg-brand-100 text-brand-700"
               : "bg-slate-100 text-slate-700 hover:bg-slate-200"
           }`}
         >
           <Users size={20} />
 
-          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white">
+          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-bold text-white">
             {participantCount}
           </span>
         </button>
@@ -204,7 +204,7 @@ function ControlPanel({
 
       {/* RIGHT: StudySpace Branding */}
       <div className="hidden shrink-0 items-center gap-2 xl:flex">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
           <GraduationCap size={21} />
         </div>
 

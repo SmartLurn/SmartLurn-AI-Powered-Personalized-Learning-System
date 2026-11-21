@@ -23,7 +23,7 @@ const formatMinutes = (minutes = 0) => {
 };
 
 const inputClass =
-  "w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100";
+  "w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100";
 
 function Profile() {
   const { updateUser } = useAuth();
@@ -106,7 +106,7 @@ function Profile() {
   });
 
   const statCards = [
-    { label: "Study sessions", value: stats?.totalSessions ?? 0, icon: UsersRound, color: "bg-violet-100 text-violet-600" },
+    { label: "Study sessions", value: stats?.totalSessions ?? 0, icon: UsersRound, color: "bg-brand-100 text-brand-600" },
     { label: "Rooms hosted", value: stats?.hostedSessions ?? 0, icon: Crown, color: "bg-amber-100 text-amber-600" },
     { label: "Time in rooms", value: formatMinutes(stats?.totalMinutes), icon: Clock3, color: "bg-emerald-100 text-emerald-600" },
     { label: "Messages sent", value: stats?.messagesSent ?? 0, icon: MessageCircle, color: "bg-blue-100 text-blue-600" },
@@ -114,7 +114,7 @@ function Profile() {
   ];
 
   return (
-    <div className="min-h-full bg-[#faf9ff] px-4 py-6 sm:px-7">
+    <div className="min-h-full bg-cream px-4 py-6 sm:px-7">
       <div className="mx-auto max-w-4xl space-y-6">
         {/* Heading */}
         <div>
@@ -128,7 +128,7 @@ function Profile() {
 
         {/* Profile card */}
         <section className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-center sm:flex-row sm:text-left">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-3xl font-bold text-white shadow-md">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-3xl font-bold text-white shadow-md">
             {profile.name?.charAt(0)?.toUpperCase() || "?"}
           </div>
 
@@ -216,7 +216,7 @@ function Profile() {
               <button
                 type="submit"
                 disabled={!hasChanges || isSaving}
-                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSaving ? (
                   <LoaderCircle size={16} className="animate-spin" />

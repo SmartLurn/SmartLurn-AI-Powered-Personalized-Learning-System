@@ -5,7 +5,7 @@ export default function SessionChatTranscript({ messages = [] }) {
   if (messages.length === 0) {
     return (
       <div className="flex min-h-64 flex-col items-center justify-center px-4 py-10 text-center">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
+        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-100 text-brand-600">
           <MessageCircle size={26} />
         </div>
 
@@ -28,7 +28,7 @@ export default function SessionChatTranscript({ messages = [] }) {
           key={message.id}
           className="flex items-start gap-3 rounded-xl bg-slate-50 p-3"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-100 font-semibold text-violet-700">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 font-semibold text-brand-700">
             {message.senderName?.charAt(0)?.toUpperCase() || "?"}
           </div>
 

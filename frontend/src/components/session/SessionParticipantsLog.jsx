@@ -15,7 +15,7 @@ export default function SessionParticipantsLog({ participants = [] }) {
   if (sortedParticipants.length === 0) {
     return (
       <div className="flex min-h-64 flex-col items-center justify-center px-4 py-10 text-center">
-        <Users size={30} className="mb-4 text-violet-500" />
+        <Users size={30} className="mb-4 text-brand-500" />
 
         <h3 className="font-semibold text-slate-800">
           No participant records
@@ -35,7 +35,7 @@ export default function SessionParticipantsLog({ participants = [] }) {
           key={participant.id}
           className="flex items-center gap-3 rounded-xl border border-slate-100 p-3"
         >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
             {participant.name?.charAt(0)?.toUpperCase() || "?"}
           </div>
 

@@ -1,10 +1,11 @@
 
 import React, { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Sparkles } from "lucide-react";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
 import Loader from "../components/Loader";
+import StudyIllustration from "../components/StudyIllustration";
 
 const Login = ({ mode = "register" }) => {
   const isRegisterMode = mode === "register";
@@ -45,8 +46,39 @@ const Login = ({ mode = "register" }) => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-violet-100 px-4 py-10">
-      <div className="w-full max-w-md rounded-2xl border border-white bg-white/90 p-6 shadow-xl shadow-indigo-100/60 sm:p-10">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-leaf-500 px-4 py-10">
+      {/* Decorative circles on the green background */}
+      <div className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-leaf-400/50" />
+      <div className="pointer-events-none absolute -bottom-32 -right-20 h-96 w-96 rounded-full bg-leaf-600/40" />
+
+      <div className="relative grid w-full max-w-5xl overflow-hidden rounded-3xl bg-cream shadow-2xl shadow-leaf-900/30 md:grid-cols-2">
+        {/* Left: welcome panel with illustration (medium screens and up) */}
+        <div className="hidden flex-col justify-between gap-8 bg-peach p-10 md:flex">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-leaf-500 text-white">
+              <Sparkles size={20} fill="white" strokeWidth={1.5} />
+            </div>
+            <span className="text-lg font-extrabold tracking-tight text-leaf-800">
+              SmartLurn
+            </span>
+          </div>
+
+          <div>
+            <h2 className="text-3xl font-bold leading-tight text-leaf-800">
+              Travel into the world of{" "}
+              <span className="rounded-lg bg-brand-500 px-2 text-white">knowledge</span>
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              Study together, ask your PDFs questions and keep track of your progress, all in one place.
+            </p>
+          </div>
+
+          <StudyIllustration className="mx-auto w-full max-w-sm" />
+        </div>
+
+        {/* Right: form */}
+        <div className="flex items-center p-6 sm:p-10">
+      <div className="mx-auto w-full max-w-md">
         <div className="mb-8 text-center">
 
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
@@ -74,7 +106,7 @@ const Login = ({ mode = "register" }) => {
                 onChange={(e) => setName(e.target.value)}
                 autoComplete="name"
                 required
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:ring-4 focus:ring-brand-100"
               />
             </div>
           )}
@@ -91,7 +123,7 @@ const Login = ({ mode = "register" }) => {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               required
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:ring-4 focus:ring-brand-100"
             />
           </div>
 
@@ -109,7 +141,7 @@ const Login = ({ mode = "register" }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete={isRegisterMode ? "new-password" : "current-password"}
                 required
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:ring-4 focus:ring-brand-100"
               />
 
               <button
@@ -117,7 +149,7 @@ const Login = ({ mode = "register" }) => {
                 onClick={() => setShowPassword((prev) => !prev)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 aria-pressed={showPassword}
-                className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 transition hover:text-indigo-600"
+                className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-500 transition hover:text-brand-600"
               >
                 {showPassword ? (
                   <EyeOff size={20} />
@@ -131,7 +163,7 @@ const Login = ({ mode = "register" }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-xl bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-xl bg-brand-600 px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-brand-200 transition hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-200 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting
               ? "Please wait..."
@@ -147,13 +179,13 @@ const Login = ({ mode = "register" }) => {
             : "Don't have an account?"}{" "}
           <Link
             to={isRegisterMode ? "/login" : "/register"}
-            className="font-semibold text-indigo-600 transition hover:text-indigo-800"
+            className="font-semibold text-brand-600 transition hover:text-brand-800"
           >
             {isRegisterMode ? "Sign in" : "Create account"}
           </Link>
         </p>
-
-  
+      </div>
+        </div>
       </div>
     </div>
   );

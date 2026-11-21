@@ -43,7 +43,7 @@ function VideoTile({
       {/* Camera-off placeholder */}
       {!showVideo && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white sm:gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-600 text-xl font-semibold shadow-inner sm:h-16 sm:w-16 sm:text-2xl">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-xl font-semibold shadow-inner sm:h-16 sm:w-16 sm:text-2xl">
             {name?.charAt(0)?.toUpperCase() || "?"}
           </div>
 

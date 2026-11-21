@@ -71,7 +71,7 @@ function CreateMeetingModal({ isOpen, onClose, onCreate, isCreating = false }) {
               placeholder="e.g. DSA Revision"
               maxLength={MAX_TITLE_LENGTH}
               autoFocus
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               Leave empty to use "Study Room".
@@ -91,7 +91,7 @@ function CreateMeetingModal({ isOpen, onClose, onCreate, isCreating = false }) {
             <button
               type="submit"
               disabled={isCreating}
-              className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isCreating ? (
                 <>

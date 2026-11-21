@@ -9,7 +9,7 @@ const ProtectedLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#faf9ff]">
+    <div className="flex min-h-screen bg-cream">
       <SideBar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
@@ -17,7 +17,7 @@ const ProtectedLayout = () => {
 
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar with menu button, only on small screens */}
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-slate-200 bg-white px-4 py-3 lg:hidden">
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-brand-100 bg-peach px-4 py-3 lg:hidden">
           <button
             type="button"
             onClick={() => setIsSidebarOpen(true)}
@@ -28,10 +28,10 @@ const ProtectedLayout = () => {
           </button>
 
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-indigo-700 text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-leaf-500 text-white">
               <Sparkles size={17} fill="white" strokeWidth={1.5} />
             </div>
-            <span className="text-base font-extrabold tracking-tight text-[#202238]">
+            <span className="text-base font-extrabold tracking-tight text-leaf-800">
               SmartLurn
             </span>
           </div>

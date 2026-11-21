@@ -60,7 +60,7 @@ function MeetingActions() {
         <button
           type="button"
           onClick={() => setIsCreateOpen(true)}
-          className="flex w-auto items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-2.5 text-xs font-medium text-white shadow-sm transition hover:from-violet-700 hover:to-indigo-700"
+          className="flex w-auto items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-brand-600 to-brand-600 px-4 py-2.5 text-xs font-medium text-white shadow-sm transition hover:from-brand-700 hover:to-brand-700"
         >
           <Plus size={14} />
           Create Room
@@ -71,7 +71,7 @@ function MeetingActions() {
           onSubmit={handleJoinMeeting}
           className="flex items-center gap-2"
         >
-          <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-0.5 focus-within:border-violet-400 focus-within:ring-2 focus-within:ring-violet-100">
+          <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-0.5 focus-within:border-brand-400 focus-within:ring-2 focus-within:ring-brand-100">
             <Keyboard
               size={15}
               className="shrink-0 text-slate-400"
@@ -89,7 +89,7 @@ function MeetingActions() {
 
           <button
             type="submit"
-            className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-violet-600 px-3 py-2.5 text-xs font-medium text-white transition hover:bg-violet-700"
+            className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-3 py-2.5 text-xs font-medium text-white transition hover:bg-brand-700"
           >
             Join
             <ArrowRight size={13} />

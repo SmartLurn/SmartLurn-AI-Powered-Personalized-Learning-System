@@ -38,7 +38,7 @@ function ChatPanel({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
         <div className="flex items-center gap-2">
-          <MessageCircle size={20} className="text-violet-600" />
+          <MessageCircle size={20} className="text-brand-600" />
           <h2 className="font-semibold text-slate-800">
             Study Chat
           </h2>
@@ -90,7 +90,7 @@ function ChatPanel({
                 <div
                   className={`max-w-[90%] break-words rounded-2xl px-3 py-2 text-sm ${
                     isMe
-                      ? "rounded-br-sm bg-violet-600 text-white"
+                      ? "rounded-br-sm bg-brand-600 text-white"
                       : "rounded-bl-sm bg-slate-100 text-slate-700"
                   }`}
                 >
@@ -114,13 +114,13 @@ function ChatPanel({
           value={text}
           onChange={(event) => setText(event.target.value)}
           placeholder="Type a message..."
-          className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+          className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
         />
 
         <button
           type="submit"
           disabled={!text.trim()}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
           aria-label="Send message"
         >
           <Send size={17} />

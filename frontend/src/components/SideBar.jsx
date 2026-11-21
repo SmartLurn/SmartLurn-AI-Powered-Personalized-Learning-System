@@ -36,15 +36,24 @@ const navigation = [
 ];
 
 const itemClass = ({ isActive }) =>
-  `flex min-h-[42px] items-center gap-3 rounded-lg px-3 text-[13px] font-semibold transition-colors ${
+  `flex min-h-[42px] items-center gap-3 rounded-xl px-3 text-[13px] font-semibold transition-colors ${
     isActive
-      ? "bg-[#eeebff] text-[#6555e8]"
-      : "text-[#686d89] hover:bg-[#f7f6fc] hover:text-[#6555e8]"
+      ? "bg-brand-500 text-white shadow-md shadow-brand-200"
+      : "text-slate-600 hover:bg-white hover:text-brand-600"
   }`;
 
 // isOpen/onClose control the drawer on small screens; on large screens it is always shown
 export default function Sidebar({ isOpen = false, onClose }) {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+
+  // First letters of the user's name for the avatar circle
+  const initials =
+    (user?.name || "S")
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "S";
 
   const handleLogout = async () => {
     await logout();
@@ -61,7 +70,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
       )}
 
     <aside
-      className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[240px] shrink-0 flex-col border-r border-slate-200 bg-white px-3 py-5 transition-transform duration-200 lg:sticky lg:top-0 lg:translate-x-0 ${
+      className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[240px] shrink-0 flex-col border-r border-brand-100 bg-peach px-3 py-5 transition-transform duration-200 lg:sticky lg:top-0 lg:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}
     >
@@ -81,17 +90,34 @@ export default function Sidebar({ isOpen = false, onClose }) {
         onClick={onClose}
         className="mb-6 flex items-center gap-3 px-2"
       >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-700 text-white shadow-md shadow-violet-200/50">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-leaf-500 text-white shadow-md shadow-leaf-200">
           <Sparkles size={21} fill="white" strokeWidth={1.5} />
         </div>
 
         <div className="min-w-0">
-          <h1 className="text-lg font-extrabold tracking-tight text-[#202238]">
+          <h1 className="text-lg font-extrabold tracking-tight text-leaf-800">
             SmartLurn
           </h1>
-          <p className="mt-0.5 text-[11px] text-[#8589a5]">
+          <p className="mt-0.5 text-[11px] text-slate-500">
             Learn better, together
           </p>
+        </div>
+      </NavLink>
+
+      {/* Signed-in user */}
+      <NavLink
+        to="/profile"
+        onClick={onClose}
+        className="mb-5 flex items-center gap-3 rounded-2xl bg-white/80 p-3 shadow-sm transition hover:bg-white"
+      >
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-500 text-sm font-bold text-white ring-4 ring-brand-100">
+          {initials}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-slate-800">
+            {user?.name || "Student"}
+          </p>
+          <p className="truncate text-[11px] text-slate-500">{user?.email}</p>
         </div>
       </NavLink>
 
@@ -99,7 +125,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
       <div className="flex-1 overflow-y-auto">
         {navigation.map((section) => (
           <section key={section.heading} className="mb-4">
-            <h2 className="mb-2 px-3 py-1 text-[10px] font-extrabold tracking-[1.2px] text-[#a0a4b8]">
+            <h2 className="mb-2 px-3 py-1 text-[10px] font-extrabold tracking-[1.2px] text-leaf-600/70">
               {section.heading}
             </h2>
 
@@ -122,7 +148,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
 
         {/* Account */}
         <section className="mb-3">
-          <h2 className="mb-2 px-3 py-1 text-[10px] font-extrabold tracking-[1.2px] text-[#a0a4b8]">
+          <h2 className="mb-2 px-3 py-1 text-[10px] font-extrabold tracking-[1.2px] text-leaf-600/70">
             ACCOUNT
           </h2>
 
@@ -140,7 +166,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
             <button
               type="button"
               onClick={handleLogout}
-              className="flex min-h-[42px] items-center gap-3 rounded-lg px-3 text-left text-[13px] font-semibold text-[#686d89] transition-colors hover:bg-red-50 hover:text-red-600"
+              className="flex min-h-[42px] items-center gap-3 rounded-xl px-3 text-left text-[13px] font-semibold text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600"
             >
               <LogOut size={17} strokeWidth={2.3} />
               <span>Log out</span>

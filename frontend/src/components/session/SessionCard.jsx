@@ -35,7 +35,7 @@ function SessionCard({
   });
 
   return (
-    <article className="flex flex-col justify-between rounded-xl border border-violet-100 bg-white p-4 shadow-sm transition hover:border-violet-200 hover:shadow-md">
+    <article className="flex flex-col justify-between rounded-xl border border-brand-100 bg-white p-4 shadow-sm transition hover:border-brand-200 hover:shadow-md">
       <div>
         {/* Session ID and status */}
         <div className="flex items-center justify-between gap-2">
@@ -62,12 +62,12 @@ function SessionCard({
         {/* Date and time */}
         <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-slate-500">
           <div className="flex items-center gap-1.5">
-            <CalendarDays size={14} className="text-violet-500 shrink-0" />
+            <CalendarDays size={14} className="text-brand-500 shrink-0" />
             <span>{formattedDate}</span>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <Clock3 size={14} className="text-violet-500 shrink-0" />
+            <Clock3 size={14} className="text-brand-500 shrink-0" />
             <span>{formattedTime}</span>
           </div>
         </div>
@@ -77,12 +77,12 @@ function SessionCard({
         {/* Participant and message counts */}
         <div className="flex items-center gap-4 text-xs text-slate-600">
           <div className="flex items-center gap-1.5">
-            <Users size={15} className="text-violet-500 shrink-0" />
+            <Users size={15} className="text-brand-500 shrink-0" />
             <span>{participantCount} participants</span>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <MessageCircle size={15} className="text-violet-500 shrink-0" />
+            <MessageCircle size={15} className="text-brand-500 shrink-0" />
             <span>{displayMessageCount} messages</span>
           </div>
         </div>
@@ -93,7 +93,7 @@ function SessionCard({
         <button
           type="button"
           onClick={() => onOpenDetails(session)}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-violet-200 px-3 py-1.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-brand-200 px-3 py-1.5 text-xs font-medium text-brand-700 transition hover:bg-brand-50"
         >
           <Eye size={14} />
           View Details
@@ -103,7 +103,7 @@ function SessionCard({
           <button
             type="button"
             onClick={() => onRejoin(session)}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-violet-700 shadow-sm"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-brand-700 shadow-sm"
           >
             <RotateCcw size={14} />
             Rejoin

@@ -71,7 +71,7 @@ function VideoGrid({
   return (
     <div
       ref={containerRef}
-      className="flex h-full w-full flex-wrap content-center items-center justify-center overflow-hidden bg-[#faf9ff]"
+      className="flex h-full w-full flex-wrap content-center items-center justify-center overflow-hidden bg-cream"
       style={{ gap, padding: gap }}
     >
       {allParticipants.map((participant) => (

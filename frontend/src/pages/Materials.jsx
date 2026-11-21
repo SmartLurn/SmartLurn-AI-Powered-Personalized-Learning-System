@@ -136,11 +136,11 @@ export default function StudyMaterials() {
   };
 
   return (
-    <div className="min-h-full bg-[#FAF9FF] px-4 py-6 sm:px-8">
+    <div className="min-h-full bg-cream px-4 py-6 sm:px-8">
       {/* Page heading */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="mb-2 flex items-center gap-2 text-violet-600">
+          <div className="mb-2 flex items-center gap-2 text-brand-600">
             <BookOpen size={22} />
             <span className="text-sm font-medium">SmartLurn Library</span>
           </div>
@@ -157,7 +157,7 @@ export default function StudyMaterials() {
         <button
           type="button"
           onClick={() => setIsUploadOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-3 font-medium text-white transition hover:bg-violet-700"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3 font-medium text-white transition hover:bg-brand-700"
         >
           <Upload size={18} />
           Upload Material
@@ -182,7 +182,7 @@ export default function StudyMaterials() {
       ) : materials.length === 0 ? (
         <EmptyMaterials onUpload={() => setIsUploadOpen(true)} />
       ) : filteredMaterials.length === 0 ? (
-        <div className="rounded-2xl border border-violet-100 bg-white px-6 py-12 text-center">
+        <div className="rounded-2xl border border-brand-100 bg-white px-6 py-12 text-center">
           <h2 className="font-semibold text-slate-800">
             No matching materials
           </h2>

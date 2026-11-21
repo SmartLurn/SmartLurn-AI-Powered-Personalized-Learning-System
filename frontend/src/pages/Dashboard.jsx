@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import api from "../config/api";
 import Loader from "../components/Loader";
 import MeetingActions from "../components/meeting/MeetingActions";
+import StudyIllustration from "../components/StudyIllustration";
 import {
   UsersRound,
   ArrowRight,
@@ -22,21 +23,21 @@ const quickLinks = [
     description: "Ask questions and learn topics.",
     icon: Brain,
     path: "/ai-assistant",
-    color: "bg-violet-100 text-violet-600",
+    color: "bg-brand-100 text-brand-600",
   },
   {
     title: "Summaries & Quizzes",
     description: "Revise and test your knowledge.",
     icon: ClipboardList,
     path: "/summaries-quizzes",
-    color: "bg-blue-100 text-blue-600",
+    color: "bg-leaf-100 text-leaf-600",
   },
   {
     title: "My Files",
     description: "Access your saved materials.",
     icon: FolderOpen,
     path: "/study-materials",
-    color: "bg-amber-100 text-amber-600",
+    color: "bg-peach text-brand-700",
   },
 ];
 
@@ -84,27 +85,36 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-full bg-[#faf9ff] px-5 py-5 sm:px-7">
+    <div className="min-h-full bg-cream px-5 py-5 sm:px-7">
       <div className="mx-auto max-w-6xl space-y-5">
 
-        {/* Welcome */}
-        <section>
-          <p className="mb-1 text-[10px] font-semibold tracking-[0.18em] text-violet-500">
-            YOUR STUDY SPACE
-          </p>
+        {/* Welcome banner with Create / Join room */}
+        <section className="relative overflow-hidden rounded-3xl bg-leaf-500 p-6 text-white shadow-lg shadow-leaf-200 sm:p-8">
+          {/* Decorative circles */}
+          <div className="pointer-events-none absolute -left-10 -top-16 h-48 w-48 rounded-full bg-leaf-400/50" />
+          <div className="pointer-events-none absolute -bottom-20 right-1/3 h-56 w-56 rounded-full bg-leaf-600/40" />
 
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-800">
-            Hey, {userName}! 👋
-          </h1>
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-lg">
+              <span className="inline-block rounded-full bg-brand-500 px-3 py-1 text-[11px] font-semibold tracking-wide">
+                YOUR STUDY SPACE
+              </span>
 
-          <p className="mt-1 text-sm text-slate-500">
-            Ready to make today a productive study session?
-          </p>
-        </section>
+              <h1 className="mt-4 text-2xl font-bold leading-tight sm:text-3xl">
+                Hey, {userName}! Travel into the world of knowledge
+              </h1>
 
-        {/* Create and Join Room */}
-        <section>
-          <MeetingActions />
+              <p className="mt-2 text-sm text-leaf-50/90">
+                Ready to make today a productive study session?
+              </p>
+
+              <div className="mt-5 rounded-2xl bg-white/95 p-3 text-slate-800">
+                <MeetingActions />
+              </div>
+            </div>
+
+            <StudyIllustration className="hidden w-64 shrink-0 md:block lg:w-80" />
+          </div>
         </section>
 
         {/* Recent Rooms */}
@@ -123,7 +133,7 @@ export default function Dashboard() {
             <button
               type="button"
               onClick={() => navigate("/sessions")}
-              className="inline-flex items-center gap-1 text-xs font-medium text-violet-600 hover:text-violet-700"
+              className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 hover:text-brand-700"
             >
               View all
               <ArrowRight size={13} />
@@ -133,7 +143,7 @@ export default function Dashboard() {
           {isLoadingRooms && <Loader text="Loading recent rooms..." />}
 
           {!isLoadingRooms && recentRooms.length === 0 && (
-            <p className="rounded-xl border border-dashed border-slate-200 bg-white p-4 text-xs text-slate-500">
+            <p className="rounded-2xl border border-dashed border-brand-200 bg-white p-4 text-xs text-slate-500">
               No rooms yet. Create one to get started.
             </p>
           )}
@@ -151,16 +161,16 @@ export default function Dashboard() {
                       : "/sessions"
                   )
                 }
-                className="group rounded-xl border border-slate-200 bg-white p-3.5 text-left transition hover:border-violet-200 hover:shadow-sm"
+                className="group rounded-2xl border border-brand-100 bg-white p-4 text-left transition hover:border-brand-200 hover:shadow-sm"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-50 text-violet-600">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-leaf-100 text-leaf-600">
                     <UsersRound size={17} />
                   </div>
 
                   <ArrowRight
                     size={15}
-                    className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-500"
+                    className="text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500"
                   />
                 </div>
 
@@ -214,10 +224,10 @@ export default function Dashboard() {
                   key={item.title}
                   type="button"
                   onClick={() => navigate(item.path)}
-                  className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3.5 text-left transition hover:border-violet-200 hover:shadow-sm"
+                  className="group flex items-center gap-3 rounded-2xl border border-brand-100 bg-white p-4 text-left transition hover:border-brand-200 hover:shadow-sm"
                 >
                   <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${item.color}`}
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${item.color}`}
                   >
                     <Icon size={19} />
                   </div>
@@ -234,7 +244,7 @@ export default function Dashboard() {
 
                   <ArrowRight
                     size={15}
-                    className="shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-500"
+                    className="shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand-500"
                   />
                 </button>
               );

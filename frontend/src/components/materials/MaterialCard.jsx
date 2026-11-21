@@ -25,10 +25,10 @@ export default function MaterialCard({
   });
 
   return (
-    <article className="rounded-2xl border border-violet-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md">
+    <article className="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md">
       {/* File icon and type */}
       <div className="mb-4 flex items-start justify-between">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
           <FileText size={24} />
         </div>
 
@@ -54,7 +54,7 @@ export default function MaterialCard({
         {material.title}
       </h2>
 
-      <p className="mt-1 text-sm font-medium text-violet-600">
+      <p className="mt-1 text-sm font-medium text-brand-600">
         {material.subject}
       </p>
 
@@ -77,7 +77,7 @@ export default function MaterialCard({
         <button
           type="button"
           onClick={() => onAskAI(material)}
-          className="flex items-center justify-center gap-1 rounded-lg bg-violet-600 px-2 py-2.5 text-xs font-medium text-white transition hover:bg-violet-700"
+          className="flex items-center justify-center gap-1 rounded-lg bg-brand-600 px-2 py-2.5 text-xs font-medium text-white transition hover:bg-brand-700"
         >
           <MessageCircle size={14} />
           Ask AI
@@ -86,7 +86,7 @@ export default function MaterialCard({
         <button
           type="button"
           onClick={() => onOpenPDF(material)}
-          className="flex items-center justify-center gap-1 rounded-lg border border-violet-200 px-2 py-2.5 text-xs font-medium text-violet-700 transition hover:bg-violet-50"
+          className="flex items-center justify-center gap-1 rounded-lg border border-brand-200 px-2 py-2.5 text-xs font-medium text-brand-700 transition hover:bg-brand-50"
         >
           <ExternalLink size={14} />
           Open PDF

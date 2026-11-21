@@ -42,11 +42,11 @@ function ParticipantList({
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
         <div className="flex items-center gap-2">
-          <Users size={20} className="text-violet-600" />
+          <Users size={20} className="text-brand-600" />
           <h2 className="font-semibold text-slate-800">
             Participants
           </h2>
-          <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
+          <span className="rounded-full bg-brand-100 px-2 py-0.5 text-xs font-medium text-brand-700">
             {allParticipants.length}
           </span>
         </div>
@@ -72,7 +72,7 @@ function ParticipantList({
               className="flex items-center gap-3 rounded-xl p-3 transition hover:bg-slate-50"
             >
               {/* Avatar */}
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-100 font-semibold text-violet-700">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 font-semibold text-brand-700">
                 {p.name?.charAt(0)?.toUpperCase() || "?"}
               </div>
 

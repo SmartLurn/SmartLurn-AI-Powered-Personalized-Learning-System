@@ -57,7 +57,7 @@ function FormattedText({ text }) {
     block.isQuote ? (
       <blockquote
         key={index}
-        className="my-2 rounded-r-lg border-l-4 border-violet-400 bg-white px-3 py-2 italic text-slate-800"
+        className="my-2 rounded-r-lg border-l-4 border-brand-400 bg-white px-3 py-2 italic text-slate-800"
       >
         <BoldText text={block.lines.join("\n")} />
       </blockquote>
@@ -239,10 +239,10 @@ export default function AIAssistant() {
   const canAsk = Boolean(documentId) && !isLoadingDocument && !isAsking;
 
   return (
-    <div className="min-h-full bg-[#FAF9FF] px-4 py-6 sm:px-8">
+    <div className="min-h-full bg-cream px-4 py-6 sm:px-8">
       {/* Page heading */}
       <div className="mb-6">
-        <div className="mb-2 flex items-center gap-2 text-violet-600">
+        <div className="mb-2 flex items-center gap-2 text-brand-600">
           <Sparkles size={22} />
           <span className="text-sm font-medium">SmartLurn AI</span>
         </div>
@@ -258,12 +258,12 @@ export default function AIAssistant() {
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[300px_1fr]">
         {/* Left: choose a PDF */}
-        <aside className="rounded-2xl border border-violet-100 bg-white p-4 shadow-sm lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto">
+        <aside className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm lg:max-h-[calc(100vh-200px)] lg:overflow-y-auto">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isLoadingDocument}
-            className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-violet-700 disabled:opacity-60"
+            className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
           >
             <Upload size={16} />
             Upload a PDF
@@ -284,8 +284,8 @@ export default function AIAssistant() {
           {isLoadingMaterials ? (
             <Loader text="" />
           ) : materials.length === 0 ? (
-            <div className="rounded-xl bg-violet-50 p-4 text-center text-sm text-slate-500">
-              <BookOpen size={20} className="mx-auto mb-2 text-violet-500" />
+            <div className="rounded-xl bg-brand-50 p-4 text-center text-sm text-slate-500">
+              <BookOpen size={20} className="mx-auto mb-2 text-brand-500" />
               No materials yet. Upload a PDF above or add one in Study Materials.
             </div>
           ) : (
@@ -305,7 +305,7 @@ export default function AIAssistant() {
                       }
                       className={`flex w-full items-start gap-3 rounded-xl px-3 py-2.5 text-left transition disabled:cursor-not-allowed ${
                         isActive
-                          ? "bg-violet-100 text-violet-700"
+                          ? "bg-brand-100 text-brand-700"
                           : "text-slate-700 hover:bg-slate-50"
                       }`}
                     >
@@ -327,10 +327,10 @@ export default function AIAssistant() {
         </aside>
 
         {/* Right: chat */}
-        <section className="flex h-[calc(100vh-200px)] min-h-[480px] flex-col rounded-2xl border border-violet-100 bg-white shadow-sm">
+        <section className="flex h-[calc(100vh-200px)] min-h-[480px] flex-col rounded-2xl border border-brand-100 bg-white shadow-sm">
           {/* Selected PDF */}
-          <div className="flex items-center gap-3 border-b border-violet-100 px-5 py-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-600">
+          <div className="flex items-center gap-3 border-b border-brand-100 px-5 py-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
               <FileText size={20} />
             </div>
             <div className="min-w-0">
@@ -353,7 +353,7 @@ export default function AIAssistant() {
               <Loader text="Reading your PDF..." />
             ) : !documentId ? (
               <div className="flex h-full flex-col items-center justify-center text-center">
-                <Bot size={40} className="mb-3 text-violet-400" />
+                <Bot size={40} className="mb-3 text-brand-400" />
                 <p className="font-medium text-slate-700">
                   Ask anything about your study material
                 </p>
@@ -363,7 +363,7 @@ export default function AIAssistant() {
               </div>
             ) : messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center text-center">
-                <Sparkles size={36} className="mb-3 text-violet-400" />
+                <Sparkles size={36} className="mb-3 text-brand-400" />
                 <p className="mb-4 font-medium text-slate-700">
                   What would you like to know?
                 </p>
@@ -373,7 +373,7 @@ export default function AIAssistant() {
                       key={suggestion}
                       type="button"
                       onClick={() => askQuestion(suggestion)}
-                      className="rounded-full border border-violet-200 px-4 py-2 text-sm text-violet-700 transition hover:bg-violet-50"
+                      className="rounded-full border border-brand-200 px-4 py-2 text-sm text-brand-700 transition hover:bg-brand-50"
                     >
                       {suggestion}
                     </button>
@@ -392,8 +392,8 @@ export default function AIAssistant() {
                     <div
                       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
                         isUser
-                          ? "bg-violet-600 text-white"
-                          : "bg-violet-100 text-violet-600"
+                          ? "bg-brand-600 text-white"
+                          : "bg-brand-100 text-brand-600"
                       }`}
                     >
                       {isUser ? <User size={16} /> : <Bot size={16} />}
@@ -402,7 +402,7 @@ export default function AIAssistant() {
                     <div
                       className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                         isUser
-                          ? "bg-violet-600 text-white"
+                          ? "bg-brand-600 text-white"
                           : message.isError
                           ? "bg-red-50 text-red-600"
                           : "bg-slate-50 text-slate-700"
@@ -417,7 +417,7 @@ export default function AIAssistant() {
 
             {isAsking && (
               <div className="flex items-center gap-2 text-sm text-slate-500">
-                <LoaderCircle size={16} className="animate-spin text-violet-600" />
+                <LoaderCircle size={16} className="animate-spin text-brand-600" />
                 Thinking...
               </div>
             )}
@@ -428,7 +428,7 @@ export default function AIAssistant() {
           {/* Question box */}
           <form
             onSubmit={handleSubmit}
-            className="flex items-end gap-2 border-t border-violet-100 p-4"
+            className="flex items-end gap-2 border-t border-brand-100 p-4"
           >
             <textarea
               value={question}
@@ -440,13 +440,13 @@ export default function AIAssistant() {
               placeholder={
                 documentId ? "Ask a question about this PDF..." : "Select a PDF first"
               }
-              className="max-h-32 min-h-[46px] flex-1 resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100 disabled:bg-slate-50"
+              className="max-h-32 min-h-[46px] flex-1 resize-none rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100 disabled:bg-slate-50"
             />
             <button
               type="submit"
               disabled={!canAsk || !question.trim()}
               aria-label="Send question"
-              className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-700 disabled:opacity-50"
+              className="flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-xl bg-brand-600 text-white transition hover:bg-brand-700 disabled:opacity-50"
             >
               <Send size={18} />
             </button>

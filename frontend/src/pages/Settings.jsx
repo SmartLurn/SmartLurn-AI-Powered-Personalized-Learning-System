@@ -8,7 +8,7 @@ import useAuth from "../hooks/useAuth";
 const MIN_PASSWORD_LENGTH = 6; // same rule as the backend
 
 const inputClass =
-  "w-full rounded-xl border border-slate-200 px-4 py-3 pr-11 text-sm text-slate-700 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100";
+  "w-full rounded-xl border border-slate-200 px-4 py-3 pr-11 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100";
 
 // Password input with a show/hide button
 function PasswordInput({ id, label, value, onChange, autoComplete }) {
@@ -112,7 +112,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-full bg-[#faf9ff] px-4 py-6 sm:px-7">
+    <div className="min-h-full bg-cream px-4 py-6 sm:px-7">
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Heading */}
         <div>
@@ -127,7 +127,7 @@ const Settings = () => {
         {/* Change password */}
         <section className="rounded-2xl border border-slate-200 bg-white p-6">
           <div className="flex items-center gap-2">
-            <KeyRound size={18} className="text-violet-600" />
+            <KeyRound size={18} className="text-brand-600" />
             <h2 className="text-base font-semibold text-slate-800">
               Change password
             </h2>
@@ -166,7 +166,7 @@ const Settings = () => {
               <button
                 type="submit"
                 disabled={isChangingPassword}
-                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isChangingPassword && <LoaderCircle size={16} className="animate-spin" />}
                 {isChangingPassword ? "Updating..." : "Update password"}

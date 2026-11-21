@@ -103,7 +103,7 @@ export default function UploadMaterialModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Data Structures Notes"
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
               required
             />
           </div>
@@ -120,7 +120,7 @@ export default function UploadMaterialModal({
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g. Computer Science"
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
               required
             />
           </div>
@@ -138,7 +138,7 @@ export default function UploadMaterialModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What topics does this PDF cover?"
               rows={3}
-              className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-100"
+              className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
             />
           </div>
 
@@ -152,11 +152,11 @@ export default function UploadMaterialModal({
 
             <label
               htmlFor="material-file"
-              className="flex cursor-pointer flex-col items-center rounded-xl border border-dashed border-violet-200 bg-violet-50/50 px-4 py-6 text-center transition hover:bg-violet-50"
+              className="flex cursor-pointer flex-col items-center rounded-xl border border-dashed border-brand-200 bg-brand-50/50 px-4 py-6 text-center transition hover:bg-brand-50"
             >
               {file ? (
                 <>
-                  <FileText size={28} className="mb-2 text-violet-600" />
+                  <FileText size={28} className="mb-2 text-brand-600" />
                   <span className="text-sm font-medium text-slate-800">
                     {file.name}
                   </span>
@@ -166,7 +166,7 @@ export default function UploadMaterialModal({
                 </>
               ) : (
                 <>
-                  <Upload size={28} className="mb-2 text-violet-600" />
+                  <Upload size={28} className="mb-2 text-brand-600" />
                   <span className="text-sm font-medium text-slate-700">
                     Choose a PDF file
                   </span>
@@ -229,7 +229,7 @@ export default function UploadMaterialModal({
             <button
               type="submit"
               disabled={isUploading}
-              className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-medium text-white hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-medium text-white hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isUploading ? (
                 <LoaderCircle size={16} className="animate-spin" />

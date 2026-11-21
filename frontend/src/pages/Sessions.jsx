@@ -35,12 +35,12 @@ const Sessions=()=> {
   }, []);
 
   return (
-    <div className="min-h-full bg-[#FAF9FF] px-4 py-6 sm:px-8">
+    <div className="min-h-full bg-cream px-4 py-6 sm:px-8">
       {/* Back button */}
       <button
         type="button"
         onClick={() => navigate("/dashboard")}
-        className="mb-6 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-violet-100 hover:text-violet-700"
+        className="mb-6 inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-brand-100 hover:text-brand-700"
       >
         <ArrowLeft size={18} />
         Go to Dashboard
@@ -63,7 +63,7 @@ const Sessions=()=> {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-dashed border-violet-200 bg-white p-4 text-center sm:p-8">
+      <div className="rounded-2xl border border-dashed border-brand-200 bg-white p-4 text-center sm:p-8">
         {isLoading ? (
           <Loader text="Loading sessions..." />
         ) : sessions.length === 0 ? (

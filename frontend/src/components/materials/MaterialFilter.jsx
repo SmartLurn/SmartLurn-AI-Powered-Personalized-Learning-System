@@ -11,7 +11,7 @@ export default function MaterialFilters({
   return (
     <div className="mb-6 space-y-4">
       {/* Search bar */}
-      <div className="flex items-center gap-3 rounded-xl border border-violet-100 bg-white px-4 py-3 shadow-sm">
+      <div className="flex items-center gap-3 rounded-xl border border-brand-100 bg-white px-4 py-3 shadow-sm">
         <Search size={20} className="shrink-0 text-slate-400" />
 
         <input
@@ -28,7 +28,7 @@ export default function MaterialFilters({
         <select
           value={selectedSubject}
           onChange={(e) => setSelectedSubject(e.target.value)}
-          className="rounded-xl border border-violet-100 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-violet-400"
+          className="rounded-xl border border-brand-100 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-brand-400"
         >
           <option value="All">All Subjects</option>
 
