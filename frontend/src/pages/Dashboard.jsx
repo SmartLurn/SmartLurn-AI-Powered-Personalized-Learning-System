@@ -39,6 +39,24 @@ const getWeeklyActivity = (sessions) => {
   return days;
 };
 
+// Grey shimmering rows shown while the dashboard data loads
+function SkeletonRows({ count = 3 }) {
+  return (
+    <ul className="space-y-3" aria-hidden="true">
+      {Array.from({ length: count }).map((_, i) => (
+        <li key={i} className="flex items-center gap-3 p-1">
+          <span className="skeleton h-10 w-10 shrink-0 rounded-lg" />
+          <span className="flex-1 space-y-2">
+            <span className="skeleton block h-3.5 w-2/5" />
+            <span className="skeleton block h-3 w-3/5" />
+          </span>
+          <span className="skeleton hidden h-8 w-20 sm:block" />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Card({ title, action, children, className = "", style }) {
   return (
     <section
@@ -107,6 +125,7 @@ export default function Dashboard() {
   // Open the AI assistant with the latest PDF and the typed question
   const askAI = (e) => {
     e.preventDefault();
+    if (isLoading) return;
     if (!latestMaterial) {
       navigate("/study-materials", { state: { upload: true } });
       return;
@@ -157,7 +176,7 @@ export default function Dashboard() {
               </span>
             </div>
             <p className="mt-3 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-              {isLoading ? <span className="inline-block h-8 w-14 animate-pulse rounded-md bg-slate-100" /> : value}
+              {isLoading ? <span className="skeleton inline-block h-8 w-16 align-middle" /> : value}
               {!isLoading && unit && <span className="ml-1 text-sm font-medium text-slate-400">{unit}</span>}
             </p>
           </div>
@@ -229,9 +248,11 @@ export default function Dashboard() {
                 </li>
               ))}
             </ul>
+          ) : isLoading ? (
+            <SkeletonRows count={3} />
           ) : (
             <p className="rounded-xl border border-dashed border-slate-200 p-5 text-sm text-slate-500">
-              {isLoading ? "Loading..." : "No materials yet. Upload a PDF to start learning from it."}
+              No materials yet. Upload a PDF to start learning from it.
             </p>
           )}
         </Card>
@@ -239,7 +260,9 @@ export default function Dashboard() {
         {/* Ask AI */}
         <Card title="Ask the AI assistant" className="animate-fade-up" style={{ animationDelay: "360ms" }}>
           <p className="mb-4 text-sm leading-6 text-slate-500">
-            {latestMaterial
+            {isLoading
+              ? "Loading your materials..."
+              : latestMaterial
               ? <>Get explanations from <span className="font-medium text-slate-700">{latestMaterial.title}</span>.</>
               : "Upload a PDF, then ask questions about it."}
           </p>
@@ -247,7 +270,7 @@ export default function Dashboard() {
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder={latestMaterial ? "Ask a question..." : "Upload a PDF first"}
+              placeholder={isLoading || latestMaterial ? "Ask a question..." : "Upload a PDF first"}
               className="min-w-0 flex-1 bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400"
               aria-label="Question for the AI assistant"
             />
@@ -280,9 +303,11 @@ export default function Dashboard() {
             <MeetingActions />
           </div>
 
-          {recentRooms.length === 0 ? (
+          {isLoading ? (
+            <SkeletonRows count={4} />
+          ) : recentRooms.length === 0 ? (
             <p className="rounded-xl border border-dashed border-slate-200 p-5 text-sm text-slate-500">
-              {isLoading ? "Loading..." : "No rooms yet. Create one and share the code with friends."}
+              No rooms yet. Create one and share the code with friends.
             </p>
           ) : (
             <ul className="divide-y divide-slate-100">
@@ -336,18 +361,18 @@ export default function Dashboard() {
         {/* Weekly activity */}
         <Card title="This week" className="animate-fade-up" style={{ animationDelay: "480ms" }}>
           <p className="-mt-2 mb-4 text-xs text-slate-500">
-            {roomsThisWeek} study {roomsThisWeek === 1 ? "room" : "rooms"} in the last 7 days
+            {isLoading ? "Loading activity..." : `${roomsThisWeek} study ${roomsThisWeek === 1 ? "room" : "rooms"} in the last 7 days`}
           </p>
           <div className="flex h-40 items-end gap-2">
             {weeklyActivity.map((day, index) => (
               <div key={day.label + index} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
                 <span className="text-[11px] font-medium text-slate-500">{day.count || ""}</span>
                 <div
-                  className={`w-full max-w-8 origin-bottom animate-grow-up rounded-md ${
-                    day.count ? "bg-brand-500" : "bg-slate-100"
+                  className={`w-full max-w-8 origin-bottom rounded-md ${
+                    isLoading ? "skeleton" : `animate-grow-up ${day.count ? "bg-brand-500" : "bg-slate-100"}`
                   }`}
                   style={{
-                    height: `${Math.max(6, (day.count / maxPerDay) * 100)}%`,
+                    height: isLoading ? `${30 + ((index * 37) % 50)}%` : `${Math.max(6, (day.count / maxPerDay) * 100)}%`,
                     animationDelay: `${500 + index * 50}ms`,
                   }}
                   title={`${day.count} on ${day.label}`}

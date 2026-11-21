@@ -1,22 +1,32 @@
-import React from 'react'
-import { LoaderCircle } from 'lucide-react'
+import { GraduationCap } from "lucide-react";
 
-// Spinner with an optional message.
+// Branded loading animation: the logo with a spinning ring around it.
 // fullScreen = true fills the whole page (for page-level loading).
 const Loader = ({ text = "Loading...", fullScreen = false }) => {
   return (
     <div
-      className={`flex flex-col items-center justify-center gap-3 ${
-        fullScreen ? "min-h-screen bg-canvas" : "py-10"
+      className={`flex flex-col items-center justify-center gap-4 ${
+        fullScreen ? "min-h-dvh bg-canvas" : "py-10"
       }`}
+      role="status"
     >
-      <LoaderCircle size={28} className="animate-spin text-brand-600" />
+      <div className={`relative flex items-center justify-center ${fullScreen ? "h-16 w-16" : "h-11 w-11"}`}>
+        {/* Spinning ring */}
+        <span className="absolute inset-0 animate-spin rounded-full border-2 border-brand-100 border-t-brand-600" />
+        {/* Logo in the middle, gently pulsing */}
+        <span
+          className={`flex animate-pulse items-center justify-center rounded-lg bg-brand-600 text-white ${
+            fullScreen ? "h-9 w-9" : "h-6 w-6 rounded-md"
+          }`}
+        >
+          <GraduationCap size={fullScreen ? 19 : 13} />
+        </span>
+      </div>
 
-      {text && (
-        <p className="text-sm font-medium text-slate-500">{text}</p>
-      )}
+      {text && <p className="text-sm font-medium text-slate-500">{text}</p>}
+      {!text && <span className="sr-only">Loading</span>}
     </div>
-  )
-}
+  );
+};
 
-export default Loader
+export default Loader;

@@ -64,6 +64,19 @@
   }
 }
 
+/* Grey placeholder with a moving shine, shown while data loads */
+@utility skeleton {
+  background: linear-gradient(90deg, #eef0f4 25%, #f7f8fb 37%, #eef0f4 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 50%; }
+  to { background-position: 0 50%; }
+}
+
 /* Buttons that press in slightly when clicked */
 @utility press {
   transition: transform 0.1s ease, background-color 0.15s ease, box-shadow 0.15s ease;

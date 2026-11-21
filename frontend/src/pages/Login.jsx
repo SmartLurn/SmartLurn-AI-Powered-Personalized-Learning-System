@@ -1,31 +1,48 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Navigate, Link } from "react-router-dom";
-import { Eye, EyeOff, FileText, MessagesSquare, UsersRound, LoaderCircle } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
 import Loader from "../components/Loader";
 import Logo from "../components/Logo";
+import LoginIllustration from "../components/LoginIllustration";
+import WelcomeSplash from "../components/WelcomeSplash";
 
-const features = [
-  {
-    icon: UsersRound,
-    title: "Study rooms",
-    text: "Video calls and live chat with up to 6 classmates.",
-  },
-  {
-    icon: MessagesSquare,
-    title: "Ask your notes",
-    text: "Questions answered from your own PDFs, with page numbers.",
-  },
-  {
-    icon: FileText,
-    title: "One library",
-    text: "All your study materials organised by subject.",
-  },
-];
+const CURRENT_YEAR = new Date().getFullYear();
 
+// Soft filled inputs with no border, like the reference design
 const inputClass =
-  "h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-50";
+  "h-12 w-full rounded-xl bg-slate-100/80 px-4 text-sm text-slate-900 outline-none ring-1 ring-transparent transition placeholder:text-slate-400 focus:bg-white focus:ring-brand-300 focus:shadow-[0_0_0_4px_rgb(230_232_253)]";
+
+// Decorative shapes on the indigo background
+function BackgroundShapes() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+      {/* Dot grids */}
+      <div
+        className="absolute left-6 top-16 h-40 w-56 opacity-40"
+        style={{ backgroundImage: "radial-gradient(rgb(255 255 255 / 0.7) 1.5px, transparent 1.5px)", backgroundSize: "18px 18px" }}
+      />
+      <div
+        className="absolute bottom-10 right-6 h-48 w-24 opacity-40"
+        style={{ backgroundImage: "radial-gradient(rgb(255 255 255 / 0.7) 1.5px, transparent 1.5px)", backgroundSize: "18px 18px" }}
+      />
+      {/* Circles */}
+      <div className="absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-white/5" />
+      <div className="absolute right-[18%] top-10 h-8 w-8 animate-float rounded-full bg-white/25" />
+      <div className="absolute bottom-[12%] right-[8%] h-5 w-5 rounded-full bg-white/30" />
+      {/* Triangles */}
+      <div
+        className="absolute left-[4%] top-6 h-0 w-0 animate-float border-y-[14px] border-l-[22px] border-y-transparent border-l-teal-300"
+        style={{ animationDuration: "8s" }}
+      />
+      <div className="absolute bottom-[8%] left-[30%] h-0 w-0 border-y-[12px] border-l-[20px] border-y-transparent border-l-teal-300/80" />
+      {/* Slanted bars */}
+      <div className="absolute left-0 top-[42%] h-6 w-24 -skew-y-12 bg-teal-300/70" />
+      <div className="absolute right-0 top-[60%] h-6 w-20 -skew-y-12 bg-teal-300/70" />
+    </div>
+  );
+}
 
 const Login = ({ mode = "register" }) => {
   const isRegisterMode = mode === "register";
@@ -37,6 +54,15 @@ const Login = ({ mode = "register" }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // After a successful login/sign-up: show the welcome screen, then go to the dashboard
+  const [welcome, setWelcome] = useState(null); // { name, isNewUser }
+  const [isSplashDone, setIsSplashDone] = useState(false);
+  const finishSplash = useCallback(() => setIsSplashDone(true), []);
+
+  if (welcome && !isSplashDone) {
+    return <WelcomeSplash name={welcome.name} isNewUser={welcome.isNewUser} onDone={finishSplash} />;
+  }
 
   if (isAuthLoading) {
     return <Loader text="Checking authentication..." fullScreen />;
@@ -52,11 +78,11 @@ const Login = ({ mode = "register" }) => {
 
     try {
       if (isRegisterMode) {
-        await signup(name, email, password);
-        toast.success("Account created successfully!");
+        const data = await signup(name, email, password);
+        setWelcome({ name: data?.user?.name || name, isNewUser: true });
       } else {
-        await login(email, password);
-        toast.success("Login successful!");
+        const data = await login(email, password);
+        setWelcome({ name: data?.user?.name, isNewUser: false });
       }
     } catch (err) {
       toast.error(err.message || "Something went wrong");
@@ -66,155 +92,130 @@ const Login = ({ mode = "register" }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-white">
-      {/* Left: product panel (large screens) */}
-      <aside className="relative hidden w-[44%] max-w-xl flex-col justify-between overflow-hidden bg-brand-950 p-12 text-white lg:flex">
-        {/* Subtle dot grid */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.15]"
-          style={{
-            backgroundImage: "radial-gradient(rgb(255 255 255 / 0.6) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-            maskImage: "linear-gradient(to bottom, black, transparent 85%)",
-          }}
-        />
+    <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 p-4 sm:p-8">
+      <BackgroundShapes />
 
-        <div className="relative">
-          <Logo light />
+      {/* Main card */}
+      <div className="relative flex w-full max-w-6xl animate-pop-in flex-col rounded-[28px] bg-slate-50 px-6 py-6 shadow-2xl shadow-brand-950/30 sm:px-10 sm:py-8 lg:min-h-[640px] lg:px-14">
+        {/* Top row: logo and switch button */}
+        <div className="flex items-center justify-between">
+          <Logo size="sm" />
+          <Link
+            to={isRegisterMode ? "/login" : "/register"}
+            className="press rounded-full border border-slate-300 px-5 py-1.5 text-sm font-medium text-slate-600 transition hover:border-brand-400 hover:text-brand-700"
+          >
+            {isRegisterMode ? "Log in" : "Register"}
+          </Link>
         </div>
 
-        <div className="relative animate-fade-up">
-          <h2 className="max-w-md text-4xl font-semibold leading-tight tracking-tight">
-            Study smarter, together.
-          </h2>
-          <p className="mt-4 max-w-md text-base leading-7 text-brand-100/80">
-            Your notes, your study group and an assistant that knows your syllabus, in one place.
-          </p>
+        {/* Form and illustration */}
+        <div className="grid flex-1 items-center gap-10 py-10 lg:grid-cols-2 lg:py-6">
+          <div className="mx-auto w-full max-w-sm animate-fade-up" style={{ animationDelay: "120ms" }}>
+            <h1 className="text-xl font-semibold text-slate-900">
+              {isRegisterMode ? "Create your account" : "Login to your account"}
+            </h1>
+            <p className="mt-1.5 text-sm text-slate-500">
+              {isRegisterMode
+                ? "Join your study group in a minute."
+                : "Welcome back. Pick up where you left off."}
+            </p>
 
-          <ul className="mt-10 space-y-5">
-            {features.map(({ icon: Icon, title, text }, index) => (
-              <li
-                key={title}
-                className="flex animate-fade-up gap-4"
-                style={{ animationDelay: `${150 + index * 90}ms` }}
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
-                  <Icon size={18} />
-                </span>
-                <span>
-                  <span className="block text-sm font-medium">{title}</span>
-                  <span className="block text-sm text-brand-100/70">{text}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <p className="relative text-xs text-brand-100/50">© {new Date().getFullYear()} SmartLurn</p>
-      </aside>
-
-      {/* Right: form */}
-      <main className="flex flex-1 items-center justify-center px-5 py-10 sm:px-10">
-        <div className="w-full max-w-sm animate-fade-up">
-          <div className="mb-8 lg:hidden">
-            <Logo />
-          </div>
-
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-            {isRegisterMode ? "Create your account" : "Welcome back"}
-          </h1>
-          <p className="mt-1.5 text-sm text-slate-500">
-            {isRegisterMode
-              ? "Start studying with your group in a minute."
-              : "Sign in to continue your learning."}
-          </p>
-
-          <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-            {isRegisterMode && (
-              <div>
-                <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-slate-700">
-                  Full name
-                </label>
+            <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+              {isRegisterMode && (
                 <input
                   id="name"
                   type="text"
-                  placeholder="Ananya Sharma"
+                  placeholder="Full name"
+                  aria-label="Full name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
                   required
                   className={inputClass}
                 />
-              </div>
-            )}
+              )}
 
-            <div>
-              <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-slate-700">
-                Email
-              </label>
               <input
                 id="email"
                 type="email"
                 autoCapitalize="none"
                 autoCorrect="off"
                 spellCheck={false}
-                placeholder="you@example.com"
+                placeholder="Your email"
+                aria-label="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
                 required
                 className={inputClass}
               />
-            </div>
 
-            <div>
-              <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-slate-700">
-                Password
-              </label>
               <div className="relative">
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder={isRegisterMode ? "At least 6 characters" : "Your password"}
+                  placeholder={isRegisterMode ? "Password (at least 6 characters)" : "Password"}
+                  aria-label="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete={isRegisterMode ? "new-password" : "current-password"}
                   required
-                  className={`${inputClass} pr-11`}
+                  className={`${inputClass} pr-12`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   aria-pressed={showPassword}
-                  className="absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-400 transition hover:text-slate-700"
+                  className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 transition hover:text-slate-700"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="press mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-600 text-sm font-medium text-white hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSubmitting && <LoaderCircle size={16} className="animate-spin" />}
-              {isSubmitting ? "Please wait..." : isRegisterMode ? "Create account" : "Sign in"}
-            </button>
-          </form>
+              <div className="flex items-center justify-between gap-4 pt-3">
+                {isRegisterMode ? (
+                  <span className="text-xs text-slate-500">
+                    Have an account?{" "}
+                    <Link to="/login" className="font-medium text-brand-600 hover:text-brand-800">
+                      Log in
+                    </Link>
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => toast("Password reset is coming soon", { id: "forgot" })}
+                    className="text-xs font-medium text-slate-500 transition hover:text-brand-700"
+                  >
+                    Forgot password?
+                  </button>
+                )}
 
-          <p className="mt-8 text-center text-sm text-slate-500">
-            {isRegisterMode ? "Already have an account?" : "Don't have an account?"}{" "}
-            <Link
-              to={isRegisterMode ? "/login" : "/register"}
-              className="font-medium text-brand-600 transition hover:text-brand-800"
-            >
-              {isRegisterMode ? "Sign in" : "Create account"}
-            </Link>
-          </p>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="press inline-flex h-11 min-w-32 items-center justify-center gap-2 rounded-full bg-brand-600 px-7 text-sm font-medium text-white shadow-lg shadow-brand-600/25 hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isSubmitting && <LoaderCircle size={16} className="animate-spin" />}
+                  {isSubmitting ? "Please wait" : isRegisterMode ? "Sign up" : "Log in"}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <LoginIllustration className="hidden w-full max-w-lg animate-fade-up justify-self-center lg:block" />
         </div>
-      </main>
+
+        {/* Footer row */}
+        <div className="flex items-center justify-between border-t border-slate-200/70 pt-5 text-xs text-slate-400">
+          <span>© {CURRENT_YEAR} SmartLurn</span>
+          <span className="flex gap-1.5" aria-hidden="true">
+            <span className="h-1.5 w-4 rounded-full bg-brand-600" />
+            <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
+            <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
