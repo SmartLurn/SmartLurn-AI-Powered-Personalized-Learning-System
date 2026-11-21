@@ -35,7 +35,7 @@ function SessionCard({
   });
 
   return (
-    <article className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-5">
+    <article className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-surface p-5">
       <div>
         {/* Session ID and status */}
         <div className="flex items-center justify-between gap-2">

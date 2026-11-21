@@ -38,7 +38,7 @@ function VideoTile({
 
   return (
     <div
-      className={`relative w-full overflow-hidden rounded-xl bg-slate-900 shadow-md ${
+      className={`relative w-full overflow-hidden rounded-xl bg-[#0b1410] shadow-md ${
         fill ? "h-full" : "aspect-video"
       }`}
     >

@@ -24,7 +24,7 @@ const formatMinutes = (minutes = 0) => {
 };
 
 const inputClass =
-  "w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100";
+  "w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-pop-400 focus:ring-2 focus:ring-pop-100";
 
 function Profile() {
   const { updateUser } = useAuth();
@@ -120,7 +120,7 @@ function Profile() {
         <PageHeader title="My profile" description="Your account details and study activity." />
 
         {/* Profile card */}
-        <section className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-6 text-center sm:flex-row sm:text-left">
+        <section className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-surface p-6 text-center sm:flex-row sm:text-left">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-brand-100 text-3xl font-semibold text-brand-700 shadow-md">
             {profile.name?.charAt(0)?.toUpperCase() || "?"}
           </div>
@@ -152,7 +152,7 @@ function Profile() {
             {statCards.map(({ label, value, icon: Icon, color }) => (
               <div
                 key={label}
-                className="rounded-xl border border-slate-200 bg-white p-4"
+                className="rounded-xl border border-slate-200 bg-surface p-4"
               >
                 <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-lg ${color}`}>
                   <Icon size={18} />
@@ -165,7 +165,7 @@ function Profile() {
         </section>
 
         {/* Edit profile */}
-        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="rounded-2xl border border-slate-200 bg-surface p-6">
           <h2 className="text-base font-semibold text-slate-800">
             Edit profile
           </h2>

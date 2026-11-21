@@ -38,7 +38,7 @@ function ParticipantList({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-white md:static md:z-auto md:h-full md:w-72 md:shrink-0 md:border-l md:border-slate-200">
+    <div className="fixed inset-0 z-40 flex flex-col bg-surface md:static md:z-auto md:h-full md:w-72 md:shrink-0 md:border-l md:border-slate-200">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
         <div className="flex items-center gap-2">

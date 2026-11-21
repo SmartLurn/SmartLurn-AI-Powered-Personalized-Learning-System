@@ -33,7 +33,16 @@ const ComingSoon = ({ title }) => (
 const App = () => {
   return (
     <>
-      <Toaster />
+      <Toaster
+        toastOptions={{
+          style: {
+            background: "var(--color-surface)",
+            color: "var(--color-slate-900)",
+            border: "1px solid var(--color-slate-200)",
+            fontSize: "14px",
+          },
+        }}
+      />
 
       <Routes>
         {/* Public routes */}

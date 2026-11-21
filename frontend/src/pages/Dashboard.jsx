@@ -60,7 +60,7 @@ function SkeletonRows({ count = 3 }) {
 function Card({ title, action, children, className = "", style }) {
   return (
     <section
-      className={`rounded-2xl border border-slate-200/80 bg-white p-5 ${className}`}
+      className={`rounded-2xl border border-slate-200/80 bg-surface p-5 ${className}`}
       style={style}
     >
       {(title || action) && (
@@ -154,7 +154,7 @@ export default function Dashboard() {
         <button
           type="button"
           onClick={() => navigate("/study-materials", { state: { upload: true } })}
-          className="press inline-flex items-center justify-center gap-2 self-start rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:self-auto"
+          className="press inline-flex items-center justify-center gap-2 self-start rounded-lg border border-slate-200 bg-surface px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:self-auto"
         >
           <Upload size={16} />
           Upload PDF
@@ -166,7 +166,7 @@ export default function Dashboard() {
         {statCards.map(({ label, value, unit, icon: Icon, tint }, index) => (
           <div
             key={label}
-            className="card-hover animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5"
+            className="card-hover animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-4 sm:p-5"
             style={{ animationDelay: `${(index + 1) * 60}ms` }}
           >
             <div className="flex items-center justify-between">
@@ -225,7 +225,7 @@ export default function Dashboard() {
                       href={material.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="press inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                      className="press inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-surface px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
                     >
                       Open <ArrowUpRight size={14} />
                     </a>
@@ -239,7 +239,7 @@ export default function Dashboard() {
                       className={`press rounded-lg px-3 py-2 text-xs font-medium ${
                         index === 0
                           ? "bg-brand-600 text-white hover:bg-brand-700"
-                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                          : "border border-slate-200 bg-surface text-slate-700 hover:bg-slate-50"
                       }`}
                     >
                       Ask AI
@@ -266,7 +266,7 @@ export default function Dashboard() {
               ? <>Get explanations from <span className="font-medium text-slate-700">{latestMaterial.title}</span>.</>
               : "Upload a PDF, then ask questions about it."}
           </p>
-          <form onSubmit={askAI} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5 pl-3 transition focus-within:border-brand-300 focus-within:ring-4 focus-within:ring-brand-50">
+          <form onSubmit={askAI} className="flex items-center gap-2 rounded-xl border border-slate-200 bg-surface p-1.5 pl-3 transition focus-within:border-pop-400 focus-within:ring-4 focus-within:ring-pop-100">
             <input
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -369,7 +369,7 @@ export default function Dashboard() {
                 <span className="text-[11px] font-medium text-slate-500">{day.count || ""}</span>
                 <div
                   className={`w-full max-w-8 origin-bottom rounded-md ${
-                    isLoading ? "skeleton" : `animate-grow-up ${day.count ? "bg-brand-500" : "bg-slate-100"}`
+                    isLoading ? "skeleton" : `animate-grow-up ${index === 6 ? (day.count ? "bg-pop-500" : "bg-pop-100") : day.count ? "bg-brand-500" : "bg-slate-100"}`
                   }`}
                   style={{
                     height: isLoading ? `${30 + ((index * 37) % 50)}%` : `${Math.max(6, (day.count / maxPerDay) * 100)}%`,

@@ -43,7 +43,7 @@ function Donut({ percent }) {
 
   return (
     <svg viewBox="0 0 128 128" className="h-36 w-36 -rotate-90" role="img" aria-label={`${percent}% average score`}>
-      <circle cx="64" cy="64" r={radius} fill="none" stroke="#f1f3f7" strokeWidth="12" />
+      <circle cx="64" cy="64" r={radius} fill="none" stroke="currentColor" strokeWidth="12" className="text-slate-100" />
       <circle
         cx="64"
         cy="64"
@@ -52,7 +52,7 @@ function Donut({ percent }) {
         stroke="currentColor"
         strokeWidth="12"
         strokeLinecap="round"
-        className="text-brand-500 transition-[stroke-dashoffset] duration-1000"
+        className="text-pop-500 transition-[stroke-dashoffset] duration-1000"
         strokeDasharray={circumference}
         strokeDashoffset={circumference * (1 - percent / 100)}
       />
@@ -76,7 +76,7 @@ export default function Progress() {
         {STATS.map(({ label, value, unit, change, icon: Icon, tint }, index) => (
           <div
             key={label}
-            className="card-hover animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5"
+            className="card-hover animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-4 sm:p-5"
             style={{ animationDelay: `${(index + 1) * 60}ms` }}
           >
             <div className="flex items-center justify-between gap-2">
@@ -98,7 +98,7 @@ export default function Progress() {
 
       <div className="grid gap-5 lg:grid-cols-3">
         {/* Subjects */}
-        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5 lg:col-span-2" style={{ animationDelay: "300ms" }}>
+        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5 lg:col-span-2" style={{ animationDelay: "300ms" }}>
           <h2 className="mb-5 text-sm font-semibold text-slate-900">Progress by subject</h2>
           <ul className="space-y-5">
             {SUBJECTS.map(({ name, progress }, index) => (
@@ -119,7 +119,7 @@ export default function Progress() {
         </section>
 
         {/* Quiz performance */}
-        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5" style={{ animationDelay: "360ms" }}>
+        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5" style={{ animationDelay: "360ms" }}>
           <h2 className="mb-4 text-sm font-semibold text-slate-900">Quiz performance</h2>
           <div className="flex flex-col items-center">
             <div className="relative">
@@ -131,7 +131,7 @@ export default function Progress() {
             </div>
             <div className="mt-4 flex gap-5 text-xs text-slate-600">
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-brand-500" /> Correct {QUIZ_AVERAGE}%
+                <span className="h-2 w-2 rounded-full bg-pop-500" /> Correct {QUIZ_AVERAGE}%
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-slate-200" /> Incorrect {100 - QUIZ_AVERAGE}%
@@ -155,7 +155,7 @@ export default function Progress() {
         </section>
 
         {/* Weekly hours */}
-        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5 lg:col-span-3" style={{ animationDelay: "420ms" }}>
+        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5 lg:col-span-3" style={{ animationDelay: "420ms" }}>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-semibold text-slate-900">Study hours this week</h2>
             <span className="text-xs text-slate-500">

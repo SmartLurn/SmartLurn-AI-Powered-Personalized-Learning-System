@@ -15,14 +15,15 @@ export default function WelcomeSplash({ name, isNewUser = false, onDone }) {
 
   return (
     <div
-      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 px-6 text-center text-white"
+      className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-brand-700 via-brand-800 to-brand-950 px-6 text-center text-white"
       role="status"
     >
       {/* Soft expanding rings behind the logo */}
+      <span className="absolute h-[520px] w-[520px] rounded-full bg-pop-500/20 blur-3xl" />
       <span className="absolute h-40 w-40 animate-ping rounded-full bg-white/10" style={{ animationDuration: "1.6s" }} />
       <span className="absolute h-64 w-64 rounded-full border border-white/10" />
 
-      <div className="relative flex h-16 w-16 animate-pop-in items-center justify-center rounded-2xl bg-white text-brand-600 shadow-xl shadow-brand-950/30">
+      <div className="relative flex h-16 w-16 animate-pop-in items-center justify-center rounded-2xl bg-[#fffcf6] text-brand-700 shadow-xl shadow-black/30">
         <GraduationCap size={32} />
       </div>
 
@@ -37,7 +38,7 @@ export default function WelcomeSplash({ name, isNewUser = false, onDone }) {
       {/* Progress bar that fills while the splash is shown */}
       <div className="relative mt-8 h-1 w-48 overflow-hidden rounded-full bg-white/20">
         <div
-          className="h-full origin-left animate-grow-x rounded-full bg-teal-300"
+          className="h-full origin-left animate-grow-x rounded-full bg-pop-400"
           style={{ animationDuration: `${SPLASH_MS}ms`, animationTimingFunction: "ease-out" }}
         />
       </div>

@@ -24,10 +24,10 @@ export default function MaterialCard({ material, onAskAI, onOpenPDF, onStartQuiz
   });
 
   return (
-    <article className="group card-hover flex animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-white p-5">
+    <article className="group card-hover flex animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-surface p-5">
       {/* File icon, subject and quick actions */}
       <div className="mb-4 flex items-start justify-between gap-3">
-        <div className="relative flex h-12 w-10 shrink-0 items-end justify-center rounded-md border border-slate-200 bg-white pb-1.5 shadow-sm">
+        <div className="relative flex h-12 w-10 shrink-0 items-end justify-center rounded-md border border-slate-200 bg-surface pb-1.5 shadow-sm">
           {/* Folded corner */}
           <span className="absolute right-0 top-0 h-3 w-3 rounded-bl-sm border-b border-l border-slate-200 bg-slate-50" />
           <FileText size={16} className="absolute left-1/2 top-2.5 -translate-x-1/2 text-slate-300" />

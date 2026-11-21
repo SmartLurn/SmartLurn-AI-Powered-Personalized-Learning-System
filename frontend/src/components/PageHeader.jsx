@@ -7,7 +7,7 @@ export default function PageHeader({ title, description, actions, badge }) {
         <div className="flex items-center gap-2.5">
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{title}</h1>
           {badge && (
-            <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+            <span className="rounded-full border border-pop-200 bg-pop-50 px-2 py-0.5 text-[11px] font-medium text-pop-700">
               {badge}
             </span>
           )}

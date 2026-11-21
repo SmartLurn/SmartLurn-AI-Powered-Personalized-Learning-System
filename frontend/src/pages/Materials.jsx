@@ -179,7 +179,7 @@ export default function StudyMaterials() {
       ) : materials.length === 0 ? (
         <EmptyMaterials onUpload={() => setIsUploadOpen(true)} />
       ) : filteredMaterials.length === 0 ? (
-        <div className="rounded-2xl border border-brand-100 bg-white px-6 py-12 text-center">
+        <div className="rounded-2xl border border-brand-100 bg-surface px-6 py-12 text-center">
           <h2 className="font-semibold text-slate-800">
             No matching materials
           </h2>

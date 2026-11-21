@@ -62,7 +62,7 @@ function ControlPanel({
     "flex items-center justify-center gap-2 rounded-xl px-2.5 py-2.5 text-sm font-medium transition sm:px-3 sm:py-3";
 
   return (
-    <footer className="flex min-h-20 items-center justify-between gap-2 border-t border-slate-200 bg-white px-3 py-3 sm:gap-3 sm:px-4">
+    <footer className="flex min-h-20 items-center justify-between gap-2 border-t border-slate-200 bg-surface px-3 py-3 sm:gap-3 sm:px-4">
 
       {/* LEFT: Meeting code and Copy Code */}
       <div className="flex min-w-0 items-center gap-3">
@@ -192,7 +192,7 @@ function ControlPanel({
           className={`flex shrink-0 items-center gap-2 rounded-xl px-2.5 py-2.5 text-sm font-semibold text-white transition sm:px-3 sm:py-3 ${
             isHost
               ? "bg-red-600 hover:bg-red-700"
-              : "bg-slate-700 hover:bg-slate-800"
+              : "bg-[#2d2c24] hover:bg-[#1d1f18]"
           }`}
         >
           <PhoneOff size={19} />

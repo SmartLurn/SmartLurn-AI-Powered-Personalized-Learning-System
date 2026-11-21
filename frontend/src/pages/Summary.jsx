@@ -43,7 +43,7 @@ const comingSoon = () => toast("Coming soon", { id: "coming-soon" });
 
 const labelClass = "mb-1.5 block text-sm font-medium text-slate-700";
 const selectClass =
-  "h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-50";
+  "h-11 w-full rounded-lg border border-slate-200 bg-surface px-3.5 text-sm text-slate-700 outline-none transition focus:border-pop-400 focus:ring-4 focus:ring-pop-100";
 
 export default function Summary() {
   const [tab, setTab] = useState("quiz");
@@ -63,7 +63,7 @@ export default function Summary() {
       />
 
       {/* Tabs */}
-      <div className="mb-5 inline-flex animate-fade-up rounded-lg border border-slate-200 bg-white p-1" style={{ animationDelay: "60ms" }}>
+      <div className="mb-5 inline-flex animate-fade-up rounded-lg border border-slate-200 bg-surface p-1" style={{ animationDelay: "60ms" }}>
         {[
           { id: "quiz", label: "Generate quiz", icon: ListChecks },
           { id: "summary", label: "Generate summary", icon: ScrollText },
@@ -84,7 +84,7 @@ export default function Summary() {
 
       <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
         {/* Settings */}
-        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5" style={{ animationDelay: "120ms" }}>
+        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5" style={{ animationDelay: "120ms" }}>
           <h2 className="mb-4 text-sm font-semibold text-slate-900">
             {tab === "quiz" ? "Quiz settings" : "Summary settings"}
           </h2>
@@ -108,7 +108,7 @@ export default function Summary() {
                         type="button"
                         onClick={() => setDifficulty(level)}
                         className={`press rounded-md py-2 text-sm font-medium transition ${
-                          difficulty === level ? "bg-white text-brand-700 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-800"
+                          difficulty === level ? "bg-surface text-brand-700 shadow-sm ring-1 ring-slate-200" : "text-slate-500 hover:text-slate-800"
                         }`}
                       >
                         {level}
@@ -146,7 +146,7 @@ export default function Summary() {
 
         {/* Preview */}
         {tab === "quiz" ? (
-          <section key="quiz" className="animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6" style={{ animationDelay: "180ms" }}>
+          <section key="quiz" className="animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5 sm:p-6" style={{ animationDelay: "180ms" }}>
             <div className="mb-5 flex items-center justify-between gap-3">
               <h2 className="text-sm font-semibold text-slate-900">Quiz preview</h2>
               <span className="text-xs font-medium text-slate-500">
@@ -217,7 +217,7 @@ export default function Summary() {
             </div>
           </section>
         ) : (
-          <section key="summary" className="animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6" style={{ animationDelay: "180ms" }}>
+          <section key="summary" className="animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5 sm:p-6" style={{ animationDelay: "180ms" }}>
             <div className="mb-5 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
                 <FileText size={18} />

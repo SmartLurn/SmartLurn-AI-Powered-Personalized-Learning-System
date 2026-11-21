@@ -12,7 +12,7 @@ const Loader = ({ text = "Loading...", fullScreen = false }) => {
     >
       <div className={`relative flex items-center justify-center ${fullScreen ? "h-16 w-16" : "h-11 w-11"}`}>
         {/* Spinning ring */}
-        <span className="absolute inset-0 animate-spin rounded-full border-2 border-brand-100 border-t-brand-600" />
+        <span className="absolute inset-0 animate-spin rounded-full border-2 border-brand-100 border-t-pop-500" />
         {/* Logo in the middle, gently pulsing */}
         <span
           className={`flex animate-pulse items-center justify-center rounded-lg bg-brand-600 text-white ${

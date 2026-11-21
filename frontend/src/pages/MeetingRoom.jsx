@@ -92,7 +92,7 @@ export default function MeetingRoom() {
   return (
     <div className="flex h-dvh flex-col overflow-hidden bg-canvas">
       {/* Meeting Header */}
-      <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:px-6 sm:py-4">
+      <header className="flex items-center justify-between gap-3 border-b border-slate-200 bg-surface px-4 py-3 sm:px-6 sm:py-4">
         <h1 className="min-w-0 truncate text-base font-semibold text-slate-800 sm:text-lg">
           {meeting?.title || "Study Room"}
           {/* The meeting code, shown on phones too so people know what to share */}

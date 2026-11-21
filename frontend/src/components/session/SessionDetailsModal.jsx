@@ -27,14 +27,14 @@ export default function SessionDetailsModal({ session, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="session-details-title"
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl animate-pop-in sm:p-7"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-surface p-5 shadow-2xl animate-pop-in sm:p-7"
         onClick={(event) => event.stopPropagation()}
       >
         {/* Header */}
@@ -100,7 +100,7 @@ export default function SessionDetailsModal({ session, onClose }) {
             onClick={() => setActiveTab("chat")}
             className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium transition ${
               activeTab === "chat"
-                ? "bg-white text-brand-700 shadow-sm"
+                ? "bg-surface text-brand-700 shadow-sm"
                 : "text-slate-500 hover:text-brand-700"
             }`}
           >
@@ -113,7 +113,7 @@ export default function SessionDetailsModal({ session, onClose }) {
             onClick={() => setActiveTab("participants")}
             className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-medium transition ${
               activeTab === "participants"
-                ? "bg-white text-brand-700 shadow-sm"
+                ? "bg-surface text-brand-700 shadow-sm"
                 : "text-slate-500 hover:text-brand-700"
             }`}
           >

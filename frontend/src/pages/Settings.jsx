@@ -1,15 +1,26 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { AlertTriangle, Eye, EyeOff, KeyRound, LoaderCircle, LogOut, Trash2 } from "lucide-react";
+import { AlertTriangle, Eye, EyeOff, KeyRound, LoaderCircle, LogOut, Monitor, Moon, Sun, Trash2 } from "lucide-react";
 import api from "../config/api";
 import useAuth from "../hooks/useAuth";
+import useTheme from "../hooks/useTheme";
 import PageHeader from "../components/PageHeader";
+
+// Fixed colours so each preview always shows its own theme
+const LIGHT_PREVIEW = { canvas: "bg-[#f4efe5]", side: "bg-[#fffcf6]", text: "bg-[#1f3d2b]", card: "bg-[#e8dcc4]" };
+const DARK_PREVIEW = { canvas: "bg-[#0d1a12]", side: "bg-[#142319]", text: "bg-[#e8dcc4]", card: "bg-[#1f3d2b]" };
+
+const THEME_OPTIONS = [
+  { value: "light", label: "Light", icon: Sun, preview: LIGHT_PREVIEW },
+  { value: "dark", label: "Dark", icon: Moon, preview: DARK_PREVIEW },
+  { value: "system", label: "Match device", icon: Monitor, preview: { canvas: "bg-gradient-to-r from-[#f4efe5] from-50% to-[#0d1a12] to-50%", side: "bg-[#fffcf6]", text: "bg-[#1f3d2b]", card: "bg-[#e8dcc4]" } },
+];
 
 const MIN_PASSWORD_LENGTH = 6; // same rule as the backend
 
 const inputClass =
-  "w-full rounded-xl border border-slate-200 px-4 py-3 pr-11 text-sm text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100";
+  "w-full rounded-xl border border-slate-200 px-4 py-3 pr-11 text-sm text-slate-700 outline-none transition focus:border-pop-400 focus:ring-2 focus:ring-pop-100";
 
 // Password input with a show/hide button
 function PasswordInput({ id, label, value, onChange, autoComplete }) {
@@ -46,6 +57,7 @@ function PasswordInput({ id, label, value, onChange, autoComplete }) {
 const Settings = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   // Change password
   const [currentPassword, setCurrentPassword] = useState("");
@@ -115,10 +127,47 @@ const Settings = () => {
   return (
     <div className="px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl space-y-6">
-        <PageHeader title="Settings" description="Manage your password and account." />
+        <PageHeader title="Settings" description="Manage your appearance, password and account." />
+
+        {/* Appearance */}
+        <section className="animate-fade-up rounded-2xl border border-slate-200 bg-surface p-6" style={{ animationDelay: "60ms" }}>
+          <h2 className="text-base font-semibold text-slate-900">Appearance</h2>
+          <p className="mt-1 text-sm text-slate-500">Choose how SmartLurn looks on this device.</p>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {THEME_OPTIONS.map(({ value, label, icon: Icon, preview }) => {
+              const isSelected = theme === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setTheme(value)}
+                  aria-pressed={isSelected}
+                  className={`press rounded-xl border p-3 text-left transition ${
+                    isSelected ? "border-pop-400 ring-4 ring-pop-100" : "border-slate-200 hover:border-slate-300"
+                  }`}
+                >
+                  {/* Mini preview of the theme */}
+                  <div className={`mb-3 flex h-16 overflow-hidden rounded-lg ${preview.canvas}`}>
+                    <div className={`w-1/4 ${preview.side}`} />
+                    <div className="flex flex-1 flex-col gap-1.5 p-2">
+                      <div className={`h-2 w-3/5 rounded ${preview.text}`} />
+                      <div className={`h-6 rounded ${preview.card}`} />
+                      <div className="h-1.5 w-1/3 rounded bg-[#8b5cf6]" />
+                    </div>
+                  </div>
+                  <span className="flex items-center gap-2 text-sm font-medium text-slate-800">
+                    <Icon size={15} className={isSelected ? "text-pop-600" : "text-slate-400"} />
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* Change password */}
-        <section className="rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="rounded-2xl border border-slate-200 bg-surface p-6">
           <div className="flex items-center gap-2">
             <KeyRound size={18} className="text-brand-600" />
             <h2 className="text-base font-semibold text-slate-800">
@@ -169,7 +218,7 @@ const Settings = () => {
         </section>
 
         {/* Session */}
-        <section className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
+        <section className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-base font-semibold text-slate-800">Log out</h2>
             <p className="mt-1 text-sm text-slate-500">
@@ -188,7 +237,7 @@ const Settings = () => {
         </section>
 
         {/* Danger zone */}
-        <section className="rounded-2xl border border-red-200 bg-white p-6">
+        <section className="rounded-2xl border border-red-200 bg-surface p-6">
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} className="text-red-600" />
             <h2 className="text-base font-semibold text-red-700">Delete account</h2>

@@ -82,7 +82,7 @@ export default function Revision() {
               className={`press flex flex-col items-center gap-1 rounded-xl border py-3 transition ${
                 isSelected
                   ? "border-brand-600 bg-brand-600 text-white shadow-sm"
-                  : "border-slate-200/80 bg-white text-slate-700 hover:border-brand-200"
+                  : "border-slate-200/80 bg-surface text-slate-700 hover:border-brand-200"
               }`}
             >
               <span className={`text-[11px] font-medium uppercase ${isSelected ? "text-brand-100" : "text-slate-400"}`}>
@@ -102,7 +102,7 @@ export default function Revision() {
 
       <div className="grid gap-5 lg:grid-cols-3">
         {/* Tasks */}
-        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5 lg:col-span-2" style={{ animationDelay: "120ms" }}>
+        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5 lg:col-span-2" style={{ animationDelay: "120ms" }}>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h2 className="text-sm font-semibold text-slate-900">
@@ -157,7 +157,7 @@ export default function Revision() {
         </section>
 
         {/* Upcoming reviews */}
-        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5" style={{ animationDelay: "180ms" }}>
+        <section className="animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5" style={{ animationDelay: "180ms" }}>
           <div className="mb-1 flex items-center gap-2">
             <RotateCcw size={16} className="text-slate-400" />
             <h2 className="text-sm font-semibold text-slate-900">Upcoming reviews</h2>

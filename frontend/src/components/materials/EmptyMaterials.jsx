@@ -3,7 +3,7 @@ import { BookOpen, Upload } from "lucide-react";
 
 export default function EmptyMaterials({ onUpload }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-brand-200 bg-white px-6 py-16 text-center">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-brand-200 bg-surface px-6 py-16 text-center">
       <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 text-brand-600">
         <BookOpen size={32} />
       </div>

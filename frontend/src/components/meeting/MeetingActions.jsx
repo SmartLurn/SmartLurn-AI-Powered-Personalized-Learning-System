@@ -71,7 +71,7 @@ function MeetingActions() {
           onSubmit={handleJoinMeeting}
           className="flex items-center gap-2"
         >
-          <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-50">
+          <div className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-surface px-3 transition focus-within:border-pop-400 focus-within:ring-4 focus-within:ring-pop-100">
             <Keyboard
               size={15}
               className="shrink-0 text-slate-400"
@@ -89,7 +89,7 @@ function MeetingActions() {
 
           <button
             type="submit"
-            className="press inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="press inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-surface px-4 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
             Join
             <ArrowRight size={13} />

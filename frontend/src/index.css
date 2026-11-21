@@ -1,25 +1,57 @@
 @import "tailwindcss";
 
-/* SmartLurn theme: one indigo accent on neutral cool-grey surfaces */
+/* "dark:" utilities follow the .dark class on <html> (set by the theme setting) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  SmartLurn palette, 90/10 rule:
+  - Forest green (#1F3D2B) and sand beige (#E8DCC4) do 90% of the work
+  - Electric purple (#8B5CF6) is the 10% "pop": logo, active marker, focus, badges, progress
+*/
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* Primary: buttons, active states, highlights */
-  --color-brand-50: #f3f4fe;
-  --color-brand-100: #e6e8fd;
-  --color-brand-200: #cdd1fa;
-  --color-brand-300: #a9b0f5;
-  --color-brand-400: #7f87ee;
-  --color-brand-500: #5d63e3;
-  --color-brand-600: #4a4bd4;
-  --color-brand-700: #3d3cb8;
-  --color-brand-800: #343394;
-  --color-brand-900: #2f2f76;
-  --color-brand-950: #1d1c45;
+  /* Forest green: buttons, active states, charts */
+  --color-brand-50: #edf4ef;
+  --color-brand-100: #dbe8de;
+  --color-brand-200: #b8d0bf;
+  --color-brand-300: #8eb29a;
+  --color-brand-400: #5f8b6d;
+  --color-brand-500: #3e6c4f;
+  --color-brand-600: #2a5239;
+  --color-brand-700: #1f3d2b;
+  --color-brand-800: #183022;
+  --color-brand-900: #12241a;
+  --color-brand-950: #0a150f;
 
-  /* Page and panel backgrounds */
-  --color-canvas: #f8f9fb;
-  --color-soft: #f1f3f7;
+  /* Electric purple: the pop colour, used sparingly */
+  --color-pop-50: #f5f0ff;
+  --color-pop-100: #ede4fe;
+  --color-pop-200: #dccbfd;
+  --color-pop-300: #c3a6fb;
+  --color-pop-400: #a57cf8;
+  --color-pop-500: #8b5cf6;
+  --color-pop-600: #7440ea;
+  --color-pop-700: #6230cf;
+
+  /* Sand: page background, card surface, soft panels */
+  --color-sand: #e8dcc4;
+  --color-canvas: #f4efe5;
+  --color-surface: #fffcf6;
+  --color-soft: #ebe3d3;
+
+  /* Warm greys (replace Tailwind's cool slate) for text and borders */
+  --color-slate-50: #f8f5ee;
+  --color-slate-100: #f0ebe0;
+  --color-slate-200: #e3dccd;
+  --color-slate-300: #ccc3b0;
+  --color-slate-400: #9f9885;
+  --color-slate-500: #77725f;
+  --color-slate-600: #5a5646;
+  --color-slate-700: #424035;
+  --color-slate-800: #2d2c24;
+  --color-slate-900: #1d1f18;
+  --color-slate-950: #11130e;
 
   /* Small animations (all turned off below for people who prefer reduced motion) */
   --animate-fade-up: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -27,11 +59,6 @@
   --animate-grow-up: grow-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-pop-in: pop-in 0.25s ease-out both;
   --animate-grow-x: grow-x 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
-
-  @keyframes grow-x {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
-  }
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(12px); }
@@ -52,6 +79,80 @@
     from { opacity: 0; transform: scale(0.96); }
     to { opacity: 1; transform: scale(1); }
   }
+
+  @keyframes grow-x {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+}
+
+/* Dark theme: deep forest background, sand text, same purple pop */
+.dark {
+  color-scheme: dark;
+
+  --color-canvas: #0d1a12;
+  --color-surface: #142319;
+  --color-soft: #1a2d21;
+  --color-sand: #2a3b2f;
+
+  /* Warm greys flipped: low numbers are dark fills, high numbers are light text */
+  --color-slate-50: #19291e;
+  --color-slate-100: #1e3124;
+  --color-slate-200: #2a3f31;
+  --color-slate-300: #3a5243;
+  --color-slate-400: #74887a;
+  --color-slate-500: #9cab9f;
+  --color-slate-600: #bccabe;
+  --color-slate-700: #d3dbcf;
+  --color-slate-800: #e3e6d9;
+  --color-slate-900: #efebdd;
+  --color-slate-950: #f7f3e8;
+
+  /* Green: tints become translucent, text shades get lighter */
+  --color-brand-50: rgb(110 170 130 / 0.14);
+  --color-brand-100: rgb(110 170 130 / 0.22);
+  --color-brand-200: rgb(110 170 130 / 0.32);
+  --color-brand-300: #4f8462;
+  --color-brand-400: #6fa383;
+  --color-brand-500: #5b9572;
+  --color-brand-600: #3f7a56;
+  --color-brand-700: #6aa982;
+  --color-brand-800: #a9d3b6;
+  --color-brand-900: #cfe6d6;
+
+  --color-pop-50: rgb(139 92 246 / 0.14);
+  --color-pop-100: rgb(139 92 246 / 0.22);
+  --color-pop-200: rgb(139 92 246 / 0.32);
+  --color-pop-600: #a57cf8;
+  --color-pop-700: #c3a6fb;
+
+  /* Status colours: soft translucent backgrounds, readable light text */
+  --color-emerald-50: rgb(16 185 129 / 0.14);
+  --color-emerald-100: rgb(16 185 129 / 0.22);
+  --color-emerald-600: #34d399;
+  --color-emerald-700: #6ee7b7;
+  --color-amber-50: rgb(245 158 11 / 0.14);
+  --color-amber-200: rgb(245 158 11 / 0.3);
+  --color-amber-600: #fbbf24;
+  --color-amber-700: #fcd34d;
+  --color-rose-50: rgb(244 63 94 / 0.14);
+  --color-rose-600: #fb7185;
+  --color-rose-700: #fda4af;
+  --color-red-50: rgb(239 68 68 / 0.14);
+  --color-red-100: rgb(239 68 68 / 0.22);
+  --color-red-600: #f87171;
+  --color-red-700: #fca5a5;
+  --color-sky-50: rgb(14 165 233 / 0.14);
+  --color-sky-600: #38bdf8;
+  --color-sky-700: #7dd3fc;
+  --color-violet-50: rgb(139 92 246 / 0.14);
+  --color-violet-700: #c4b5fd;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-slate-900);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Cards that lift slightly on hover */
@@ -60,13 +161,18 @@
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 24px -14px rgb(15 23 42 / 0.18);
+    box-shadow: 0 10px 24px -14px rgb(31 61 43 / 0.25);
   }
 }
 
 /* Grey placeholder with a moving shine, shown while data loads */
 @utility skeleton {
-  background: linear-gradient(90deg, #eef0f4 25%, #f7f8fb 37%, #eef0f4 63%);
+  background: linear-gradient(
+    90deg,
+    var(--color-slate-100) 25%,
+    var(--color-slate-50) 37%,
+    var(--color-slate-100) 63%
+  );
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
   border-radius: 0.5rem;

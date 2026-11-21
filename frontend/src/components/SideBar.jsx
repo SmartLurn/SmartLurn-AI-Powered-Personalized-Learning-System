@@ -58,13 +58,13 @@ export default function Sidebar({ isOpen = false, onClose }) {
       {/* Dark background behind the open drawer (small screens only) */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-[2px] lg:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:hidden"
           onClick={onClose}
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[244px] shrink-0 flex-col border-r border-slate-100 bg-white px-3 py-5 transition-transform duration-300 lg:sticky lg:top-0 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[244px] shrink-0 flex-col border-r border-slate-100 bg-surface px-3 py-5 transition-transform duration-300 lg:sticky lg:top-0 lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -102,7 +102,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
                       <>
                         {/* Small bar on the left of the active page */}
                         <span
-                          className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand-600 transition-opacity ${
+                          className={`absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-pop-500 transition-opacity ${
                             isActive ? "opacity-100" : "opacity-0"
                           }`}
                         />

@@ -55,7 +55,7 @@ function FormattedText({ text }) {
     block.isQuote ? (
       <blockquote
         key={index}
-        className="my-2 rounded-r-lg border-l-4 border-brand-400 bg-white px-3 py-2 italic text-slate-800"
+        className="my-2 rounded-r-lg border-l-4 border-brand-400 bg-surface px-3 py-2 italic text-slate-800"
       >
         <BoldText text={block.lines.join("\n")} />
       </blockquote>
@@ -271,7 +271,7 @@ export default function AIAssistant() {
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-5 lg:grid-cols-[272px_1fr] xl:grid-cols-[272px_1fr_272px]">
         {/* Left: materials */}
         <aside
-          className="flex animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-white lg:min-h-0"
+          className="flex animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-surface lg:min-h-0"
           style={{ animationDelay: "60ms" }}
         >
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5">
@@ -310,10 +310,10 @@ export default function AIAssistant() {
                           isActive ? "bg-brand-50" : "hover:bg-slate-50"
                         }`}
                       >
-                        {isActive && <span className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-brand-600" />}
+                        {isActive && <span className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-pop-500" />}
                         <span
                           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                            isActive ? "bg-white text-brand-600 ring-1 ring-brand-100" : "bg-rose-50 text-rose-600"
+                            isActive ? "bg-surface text-brand-600 ring-1 ring-brand-100" : "bg-rose-50 text-rose-600"
                           }`}
                         >
                           <FileText size={16} />
@@ -338,7 +338,7 @@ export default function AIAssistant() {
         {/* Middle: chat */}
         <section
           ref={chatRef}
-          className="flex h-[78dvh] min-h-[440px] scroll-mt-20 animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-white lg:h-auto lg:min-h-0"
+          className="flex h-[78dvh] min-h-[440px] scroll-mt-20 animate-fade-up flex-col rounded-2xl border border-slate-200/80 bg-surface lg:h-auto lg:min-h-0"
           style={{ animationDelay: "120ms" }}
         >
           {/* Chat header */}
@@ -391,7 +391,7 @@ export default function AIAssistant() {
                       key={suggestion}
                       type="button"
                       onClick={() => askQuestion(suggestion)}
-                      className="press animate-fade-up rounded-full border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-700 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
+                      className="press animate-fade-up rounded-full border border-slate-200 bg-surface px-3.5 py-2 text-sm text-slate-700 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
                       style={{ animationDelay: `${index * 60}ms` }}
                     >
                       {suggestion}
@@ -416,7 +416,7 @@ export default function AIAssistant() {
                     </div>
                     <div
                       className={`min-w-0 max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-tl-md border px-4 py-3 text-sm leading-relaxed ${
-                        message.isError ? "border-red-100 bg-red-50 text-red-700" : "border-slate-200/80 bg-white text-slate-700"
+                        message.isError ? "border-red-100 bg-red-50 text-red-700" : "border-slate-200/80 bg-surface text-slate-700"
                       }`}
                     >
                       <FormattedText text={message.content} />
@@ -443,7 +443,7 @@ export default function AIAssistant() {
 
           {/* Question box */}
           <form onSubmit={handleSubmit} className="border-t border-slate-100 p-4">
-            <div className="flex items-end gap-2 rounded-xl border border-slate-200 bg-white p-1.5 pl-3.5 transition focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-50">
+            <div className="flex items-end gap-2 rounded-xl border border-slate-200 bg-surface p-1.5 pl-3.5 transition focus-within:border-pop-400 focus-within:ring-4 focus-within:ring-pop-100">
               <textarea
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
@@ -469,7 +469,7 @@ export default function AIAssistant() {
 
         {/* Right: material details and prompts (wide screens) */}
         <aside className="hidden min-h-0 animate-fade-up space-y-5 overflow-y-auto xl:block" style={{ animationDelay: "180ms" }}>
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-4">
+          <section className="rounded-2xl border border-slate-200/80 bg-surface p-4">
             <h2 className="mb-3 text-sm font-semibold text-slate-900">Attached material</h2>
             {selectedInfo ? (
               <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3">
@@ -491,7 +491,7 @@ export default function AIAssistant() {
                     href={selectedInfo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="press mt-3 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                    className="press mt-3 inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-surface px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
                   >
                     Open PDF <ExternalLink size={13} />
                   </a>
@@ -512,7 +512,7 @@ export default function AIAssistant() {
             </p>
             <ul className="mt-3 space-y-1.5">
               {EXACT_WORDING_EXAMPLES.map((example) => (
-                <li key={example} className="rounded-lg border border-brand-100 bg-white px-3 py-2 text-[13px] text-slate-700">
+                <li key={example} className="rounded-lg border border-brand-100 bg-surface px-3 py-2 text-[13px] text-slate-700">
                   “{example}”
                 </li>
               ))}

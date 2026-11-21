@@ -23,14 +23,14 @@ function CreateMeetingModal({ isOpen, onClose, onCreate, isCreating = false }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={handleClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-meeting-title"
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl animate-pop-in"
+        className="w-full max-w-md rounded-2xl bg-surface p-6 shadow-xl animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-6 flex items-start justify-between">
@@ -71,7 +71,7 @@ function CreateMeetingModal({ isOpen, onClose, onCreate, isCreating = false }) {
               placeholder="e.g. DSA Revision"
               maxLength={MAX_TITLE_LENGTH}
               autoFocus
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-pop-400 focus:ring-2 focus:ring-pop-100"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               Leave empty to use "Study Room".

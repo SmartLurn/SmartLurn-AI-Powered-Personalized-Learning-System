@@ -7,7 +7,7 @@ export default function Logo({ light = false, size = "md" }) {
   return (
     <div className="flex items-center gap-2.5">
       <div
-        className={`flex ${box} shrink-0 items-center justify-center bg-brand-600 text-white ${
+        className={`flex ${box} shrink-0 items-center justify-center bg-pop-500 text-white ${
           light ? "ring-2 ring-white/30" : ""
         }`}
       >

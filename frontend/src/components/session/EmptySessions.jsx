@@ -3,7 +3,7 @@ import { Video, CalendarDays } from "lucide-react";
 
 const EmptySessions=({ onStartMeeting })=> {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-brand-100 bg-white px-6 py-16 text-center shadow-sm">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-brand-100 bg-surface px-6 py-16 text-center shadow-sm">
       <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 text-brand-600">
         <CalendarDays size={32} />
       </div>

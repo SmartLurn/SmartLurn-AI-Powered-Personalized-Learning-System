@@ -57,14 +57,14 @@ export default function UploadMaterialModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
     >
       <section
         role="dialog"
         aria-modal="true"
         aria-labelledby="upload-material-title"
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl animate-pop-in"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-surface p-6 shadow-xl animate-pop-in"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-6 flex items-start justify-between">
@@ -103,7 +103,7 @@ export default function UploadMaterialModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Data Structures Notes"
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-pop-400 focus:ring-2 focus:ring-pop-100"
               required
             />
           </div>
@@ -120,7 +120,7 @@ export default function UploadMaterialModal({
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="e.g. Computer Science"
-              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-pop-400 focus:ring-2 focus:ring-pop-100"
               required
             />
           </div>
@@ -138,7 +138,7 @@ export default function UploadMaterialModal({
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What topics does this PDF cover?"
               rows={3}
-              className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+              className="w-full resize-y rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-pop-400 focus:ring-2 focus:ring-pop-100"
             />
           </div>
 

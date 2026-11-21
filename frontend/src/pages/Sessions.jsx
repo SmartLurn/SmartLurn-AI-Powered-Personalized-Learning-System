@@ -43,7 +43,7 @@ const Sessions=()=> {
 
       {/* Start a new room or join one by code */}
       <section
-        className="mb-6 animate-fade-up rounded-2xl border border-slate-200/80 bg-white p-5"
+        className="mb-6 animate-fade-up rounded-2xl border border-slate-200/80 bg-surface p-5"
         style={{ animationDelay: "60ms" }}
       >
         <h2 className="mb-1 text-sm font-semibold text-slate-900">Start or join a room</h2>
@@ -58,7 +58,7 @@ const Sessions=()=> {
         {isLoading ? (
           <Loader text="Loading sessions..." />
         ) : sessions.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
+          <div className="rounded-2xl border border-dashed border-slate-200 bg-surface p-6 text-center">
             <EmptySessions onStartMeeting={() => navigate("/dashboard")} />
           </div>
         ) : (

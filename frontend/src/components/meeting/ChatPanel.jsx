@@ -34,7 +34,7 @@ function ChatPanel({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-40 flex flex-col bg-white md:static md:z-auto md:h-full md:w-72 md:shrink-0 md:border-l md:border-slate-200">
+    <div className="fixed inset-0 z-40 flex flex-col bg-surface md:static md:z-auto md:h-full md:w-72 md:shrink-0 md:border-l md:border-slate-200">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
         <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ function ChatPanel({
           value={text}
           onChange={(event) => setText(event.target.value)}
           placeholder="Type a message..."
-          className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+          className="min-w-0 flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none transition focus:border-pop-400 focus:ring-2 focus:ring-pop-100"
         />
 
         <button
