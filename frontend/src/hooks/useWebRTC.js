@@ -343,10 +343,6 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
     }
 
     socket.emit("toggle-audio", { roomId, audioEnabled: newState });
-
-    toast(newState ? "Microphone unmuted" : "Microphone muted",{
-        icon: newState ? "🔊" : "🔇",
-    })
   }
 
   // Toggle camera
@@ -362,10 +358,6 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
     }
 
     socket.emit("toggle-video", { roomId, videoEnabled: newState });
-
-    toast(newState ? "Camera turned on" : "Camera turned off",{
-    icon: newState ? "📹" : "📷",
-    })
   }
 
   // End the current meeting for everyone (host only; the server checks this)

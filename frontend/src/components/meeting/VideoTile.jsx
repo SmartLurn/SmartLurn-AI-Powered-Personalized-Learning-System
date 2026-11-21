@@ -8,6 +8,8 @@ function VideoTile({
   audioEnabled = true,
   videoEnabled = true,
   connectionState,
+  // fill = take the full height of the parent (phone layouts) instead of a fixed 16:9 box
+  fill = false,
 }) {
   const videoRef = useRef(null);
 
@@ -35,7 +37,11 @@ function VideoTile({
   const showVideo = videoEnabled && stream;
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-slate-900 shadow-md">
+    <div
+      className={`relative w-full overflow-hidden rounded-xl bg-slate-900 shadow-md ${
+        fill ? "h-full" : "aspect-video"
+      }`}
+    >
       {/* The video element always stays mounted: remote audio plays through it,
           so removing it when the camera is off would also mute the person. */}
       <video
