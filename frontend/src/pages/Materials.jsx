@@ -5,6 +5,8 @@ import { Upload } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../config/api";
 import Loader from "../components/Loader";
+import useAuth from "../hooks/useAuth";
+import { readCache, writeCache } from "../utils/pageCache";
 import PageHeader from "../components/PageHeader";
 
 import MaterialFilters from "../components/materials/MaterialFilter";
@@ -15,8 +17,11 @@ import UploadMaterialModal from "../components/materials/UploadMaterialModal";
 export default function StudyMaterials() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
-  const [materials, setMaterials] = useState([]);
+  // Materials from the last visit (shown instantly, then refreshed)
+  const cachedMaterials = readCache("materials", user?.id);
+  const [materials, setMaterials] = useState(cachedMaterials ?? []);
   // Can be filled from the top-bar search or opened from the dashboard "Upload PDF" button
   const [search, setSearch] = useState(location.state?.search || "");
   const [selectedSubject, setSelectedSubject] = useState("All");
@@ -27,7 +32,12 @@ export default function StudyMaterials() {
     if (location.state?.search !== undefined) setSearch(location.state.search);
     if (location.state?.upload) setIsUploadOpen(true);
   }, [location.state]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!cachedMaterials);
+
+  // Remember the list (including uploads and deletes) for the next visit
+  useEffect(() => {
+    if (!isLoading) writeCache("materials", user?.id, materials);
+  }, [materials, isLoading, user?.id]);
 
   // Generate filter options from available materials
   const subjects = useMemo(
@@ -62,13 +72,15 @@ export default function StudyMaterials() {
         const { data } = await api.get("/materials");
         setMaterials(data.materials);
       } catch (error) {
-        toast.error(error.response?.data?.message || "Could not load materials");
+        // A failed quiet refresh keeps showing the remembered list
+        if (!cachedMaterials) toast.error(error.response?.data?.message || "Could not load materials");
       } finally {
         setIsLoading(false);
       }
     };
 
     loadMaterials();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Upload the PDF to the backend. Returns true on success so the modal can close.

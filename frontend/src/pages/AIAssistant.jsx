@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import api from "../config/api";
 import aiApi, { getAiError } from "../config/aiApi";
 import Loader from "../components/Loader";
+import useAuth from "../hooks/useAuth";
+import { readCache, writeCache } from "../utils/pageCache";
 import PageHeader from "../components/PageHeader";
 
 const SUGGESTED_QUESTIONS = [
@@ -73,8 +75,12 @@ export default function AIAssistant() {
   const fileInputRef = useRef(null);
   const messagesBoxRef = useRef(null);
 
-  const [materials, setMaterials] = useState([]);
-  const [isLoadingMaterials, setIsLoadingMaterials] = useState(true);
+  const { user } = useAuth();
+
+  // Materials from the last visit (shown instantly, then refreshed)
+  const cachedMaterials = readCache("materials", user?.id);
+  const [materials, setMaterials] = useState(cachedMaterials ?? []);
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState(!cachedMaterials);
 
   // The PDF being discussed: { key, title, material?, file? }
   const [selected, setSelected] = useState(null);
@@ -130,8 +136,10 @@ export default function AIAssistant() {
         const { data } = await api.get("/materials");
         list = data.materials;
         setMaterials(list);
+        writeCache("materials", user?.id, list);
       } catch (error) {
-        toast.error(error.response?.data?.message || "Could not load materials");
+        list = cachedMaterials ?? [];
+        if (!cachedMaterials) toast.error(error.response?.data?.message || "Could not load materials");
       } finally {
         setIsLoadingMaterials(false);
       }

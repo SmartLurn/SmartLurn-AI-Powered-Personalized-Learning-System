@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { UsersRound, Video } from "lucide-react";
 import api from "../config/api";
 import Loader from "../components/Loader";
+import useAuth from "../hooks/useAuth";
+import { readCache, writeCache } from "../utils/pageCache";
 import PageHeader from "../components/PageHeader";
 import MeetingActions from "../components/meeting/MeetingActions";
 import EmptySessions from "../components/session/EmptySessions";
@@ -12,9 +14,12 @@ import SessionDetailsModal from "../components/session/SessionDetailsModal";
 
 const Sessions=()=> {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
-  const [sessions, setSessions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // Sessions from the last visit (shown instantly, then refreshed)
+  const cachedSessions = readCache("sessions", user?.id);
+  const [sessions, setSessions] = useState(cachedSessions ?? []);
+  const [isLoading, setIsLoading] = useState(!cachedSessions);
 
   // Session whose details modal is currently open
   const [selectedSession, setSelectedSession] = useState(null);
@@ -25,14 +30,17 @@ const Sessions=()=> {
       try {
         const { data } = await api.get("/meetings/sessions");
         setSessions(data.sessions);
+        writeCache("sessions", user?.id, data.sessions);
       } catch (error) {
-        toast.error(error.response?.data?.message || "Could not load sessions");
+        // A failed quiet refresh keeps showing the remembered list
+        if (!cachedSessions) toast.error(error.response?.data?.message || "Could not load sessions");
       } finally {
         setIsLoading(false);
       }
     };
 
     loadSessions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
