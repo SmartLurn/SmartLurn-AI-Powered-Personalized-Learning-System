@@ -64,7 +64,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex h-screen w-[244px] shrink-0 flex-col border-r border-slate-100 bg-surface px-3 py-5 transition-transform duration-300 lg:sticky lg:top-0 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex h-dvh w-[244px] shrink-0 flex-col border-r border-slate-100 bg-surface px-3 py-5 transition-transform duration-300 lg:sticky lg:top-0 lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -116,19 +116,22 @@ export default function Sidebar({ isOpen = false, onClose }) {
                     )}
                   </NavLink>
                 ))}
+
+                {/* Log out sits in the Account section, under Settings */}
+                {section.heading === "Account" && (
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="group press flex min-h-[40px] items-center gap-3 rounded-xl px-3 text-left text-[13px] font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                  >
+                    <LogOut size={17} strokeWidth={2} className="text-slate-400 group-hover:text-red-600" />
+                    <span>Log out</span>
+                  </button>
+                )}
               </nav>
             </section>
           ))}
         </div>
-
-        <button
-          type="button"
-          onClick={logout}
-          className="press flex min-h-[40px] items-center gap-3 rounded-xl px-3 text-left text-[13px] font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
-        >
-          <LogOut size={17} strokeWidth={2} />
-          <span>Log out</span>
-        </button>
       </aside>
     </>
   );

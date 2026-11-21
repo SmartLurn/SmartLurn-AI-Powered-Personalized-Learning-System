@@ -4,12 +4,10 @@ import { Menu, Search } from "lucide-react";
 import SideBar from "./SideBar";
 import Footer from "./Footer";
 import Logo from "./Logo";
-import Avatar from "./Avatar";
 import ThemeToggle from "./ThemeToggle";
-import useAuth from "../hooks/useAuth";
+import UserMenu from "./UserMenu";
 
 const ProtectedLayout = () => {
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Sidebar drawer on small screens (always visible on large screens)
@@ -58,19 +56,7 @@ const ProtectedLayout = () => {
 
           <ThemeToggle className="ml-auto shrink-0" />
 
-          <Link
-            to="/profile"
-            className="flex items-center gap-2.5 rounded-lg py-1 pl-1 pr-2 transition hover:bg-slate-50"
-            title="My profile"
-          >
-            <Avatar name={user?.name} size={34} />
-            <span className="hidden text-left md:block">
-              <span className="block max-w-36 truncate text-sm font-medium text-slate-800">
-                {user?.name || "Student"}
-              </span>
-              <span className="block max-w-36 truncate text-xs text-slate-500">{user?.email}</span>
-            </span>
-          </Link>
+          <UserMenu />
         </header>
 
         <main className="flex-1">
