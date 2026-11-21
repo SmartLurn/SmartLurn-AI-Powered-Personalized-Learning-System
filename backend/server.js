@@ -10,6 +10,7 @@ import participantRouter from './routes/participantRoute.js';
 import messageRouter from './routes/messageRoute.js';
 import materialRouter from './routes/materialRoute.js';
 import userRouter from './routes/userRoute.js';
+import turnRouter from './routes/turnRoute.js';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use("/api/meetings/:meetingCode/messages", messageRouter);
 app.use("/api/meetings", meetingRouter);
 app.use("/api/materials", materialRouter);
 app.use("/api/users", userRouter);
+app.use("/api/turn-credentials", turnRouter);
 
 // Global error handler: catches any error thrown in a route or passed to next(err).
 // It must have 4 arguments and come after all the routes.
