@@ -2,38 +2,25 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import toast from "react-hot-toast";
 import { socket } from "../config/socket";
-import api from "../config/api";
 
 // STUN helps browsers find a direct route to each other.
-// TURN relays the video when a network blocks direct connections
-// (some college/office Wi-Fi and mobile data).
-const STUN_SERVER = { urls: "stun:stun.l.google.com:19302" };
-
-// Backup TURN server from .env (e.g. Metered), used if the backend has none
+// TURN (optional) relays the video when a network blocks direct connections
+// (some college/office Wi-Fi and mobile data). Set it in .env, no code change needed.
 const TURN_URL = import.meta.env.VITE_TURN_URL;
-const ENV_TURN_SERVERS = TURN_URL
-  ? [
-      {
-        urls: TURN_URL.split(",").map((url) => url.trim()),
-        username: import.meta.env.VITE_TURN_USERNAME,
-        credential: import.meta.env.VITE_TURN_CREDENTIAL,
-      },
-    ]
-  : [];
 
-// Ask the backend for TURN credentials (Cloudflare, 1,000 GB/month free).
-// Falls back to the .env TURN server, then to STUN only.
-const loadIceServers = async () => {
-  try {
-    const { data } = await api.get("/turn-credentials");
-    if (data.iceServers?.length > 0) {
-      return { iceServers: [STUN_SERVER, ...data.iceServers] };
-    }
-  } catch (error) {
-    console.log("Could not load TURN credentials:", error);
-  }
-
-  return { iceServers: [STUN_SERVER, ...ENV_TURN_SERVERS] };
+const ICE_SERVERS = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" },
+    ...(TURN_URL
+      ? [
+          {
+            urls: TURN_URL.split(",").map((url) => url.trim()),
+            username: import.meta.env.VITE_TURN_USERNAME,
+            credential: import.meta.env.VITE_TURN_CREDENTIAL,
+          },
+        ]
+      : []),
+  ],
 };
 
 const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
@@ -43,9 +30,6 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
 
   // remote participants: { socketId, userId, name, isHost, audioEnabled, videoEnabled, stream }
   const [remoteUsers, setRemoteUsers] = useState([]);
-
-  // STUN/TURN servers for every connection (loaded when joining the call)
-  const iceServersRef = useRef({ iceServers: [STUN_SERVER, ...ENV_TURN_SERVERS] });
 
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -97,7 +81,7 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
   // Create a WebRTC connection to one remote user
   // isCaller = true when we send the offer (we are the newcomer)
   const createPeer = (targetSocketId, isCaller = false) => {
-    const peer = new RTCPeerConnection(iceServersRef.current);
+    const peer = new RTCPeerConnection(ICE_SERVERS);
 
     // ICE candidates that arrive before the remote description is set wait here
     peer.pendingCandidates = [];
@@ -306,9 +290,7 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
 
     // Get the camera first so it is shared with everyone we connect to
     const start = async () => {
-      // Camera and TURN credentials at the same time, both needed before joining
-      const [, iceServers] = await Promise.all([initLocalStream(), loadIceServers()]);
-      iceServersRef.current = iceServers;
+      await initLocalStream();
 
       socket.connect();
       socket.emit("join-room", {

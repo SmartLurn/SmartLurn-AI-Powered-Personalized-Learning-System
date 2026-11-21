@@ -26,11 +26,6 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
-      # Cloudflare Realtime TURN for video calls (dashboard -> Realtime -> TURN Server)
-      - key: CLOUDFLARE_TURN_KEY_ID
-        sync: false
-      - key: CLOUDFLARE_TURN_API_TOKEN
-        sync: false
 
   # FastAPI AI service (questions about PDFs, Gemini)
   - type: web
