@@ -5,7 +5,9 @@ import { findUserByEmail, createUser } from '../models/userModel.js';
 export const Login= async(req,res)=>{
     try{
 
-        const { email, password } = req.body;
+        const { password } = req.body;
+        // Phones often capitalise the first letter, so compare emails in lowercase
+        const email = req.body?.email?.trim().toLowerCase();
 
         if(!email || !password){
             return res.status(400).json({message: "Email and password are required"});
@@ -50,7 +52,9 @@ export const Login= async(req,res)=>{
 
 export const Register= async(req,res)=>{
     try{
-    const {name,email,password}=req.body;
+    const { name, password } = req.body;
+    // Save emails in lowercase so login works however the email is typed
+    const email = req.body?.email?.trim().toLowerCase();
     if (!name || !email || !password) {
       return res.status(400).json({
         message: "All fields are required",

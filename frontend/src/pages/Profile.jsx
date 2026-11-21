@@ -203,6 +203,9 @@ function Profile() {
                 <input
                   id="profile-email"
                   type="email"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   maxLength={255}

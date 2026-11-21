@@ -12,7 +12,8 @@ export const createUser = async (name, email, hashedPassword) => {
 
 export const findUserByEmail = async (email) => {
   const result = await pool.query(
-    "SELECT * FROM users WHERE email = $1",
+    // Ignore capitals, so older accounts saved with capitals still match
+    "SELECT * FROM users WHERE LOWER(email) = LOWER($1)",
     [email]
   );
 

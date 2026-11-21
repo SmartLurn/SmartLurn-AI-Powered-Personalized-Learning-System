@@ -4,26 +4,48 @@ import api from "../config/api";
 
 export const AuthContext = createContext();
 
-// Read the saved login (if any) so a page refresh keeps the user logged in
-const getSavedUser = () => {
+// The login is saved in localStorage, so it survives closing the browser.
+// The token itself expires after 7 days (set by the backend), then the user logs in again.
+
+// True if the saved token's 7 days are over (reads the "exp" time inside the JWT)
+const isTokenExpired = (token) => {
   try {
-    return JSON.parse(sessionStorage.getItem("user"));
+    const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+    return !payload.exp || payload.exp * 1000 <= Date.now();
   } catch {
-    return null;
+    return true;
+  }
+};
+
+// Read the saved login, removing it first if it has expired
+const getSavedLogin = () => {
+  const token = localStorage.getItem("token");
+
+  if (!token || isTokenExpired(token)) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    return { token: null, user: null };
+  }
+
+  try {
+    return { token, user: JSON.parse(localStorage.getItem("user")) };
+  } catch {
+    return { token: null, user: null };
   }
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(getSavedUser);
-  const [token, setToken] = useState(() => sessionStorage.getItem("token"));
+  const [savedLogin] = useState(getSavedLogin);
+  const [user, setUser] = useState(savedLogin.user);
+  const [token, setToken] = useState(savedLogin.token);
   const [isAuthLoading] = useState(false);
 
   const isAuthenticated = Boolean(token && user);
 
-  // Save the login in state and sessionStorage
+  // Save the login in state and localStorage
   const saveLogin = (data) => {
-    sessionStorage.setItem("token", data.token);
-    sessionStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
     setUser(data.user);
     setToken(data.token);
   };
@@ -56,8 +78,8 @@ export const AuthProvider = ({ children }) => {
 
   // Logout
   const logout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     setToken(null);
   };
@@ -65,7 +87,7 @@ export const AuthProvider = ({ children }) => {
   // Update the saved user after editing the profile (name/email)
   const updateUser = (updatedUser) => {
     const newUser = { ...user, ...updatedUser };
-    sessionStorage.setItem("user", JSON.stringify(newUser));
+    localStorage.setItem("user", JSON.stringify(newUser));
     setUser(newUser);
   };
 

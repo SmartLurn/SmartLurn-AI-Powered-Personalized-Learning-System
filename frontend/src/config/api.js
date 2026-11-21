@@ -8,7 +8,7 @@ const api = axios.create({
 
 // Attach the login token to every request
 api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -21,11 +21,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const hadToken = Boolean(sessionStorage.getItem("token"));
+    const hadToken = Boolean(localStorage.getItem("token"));
 
     if (error.response?.status === 401 && hadToken) {
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       window.location.href = "/login";
     }
 

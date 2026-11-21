@@ -39,8 +39,8 @@ export const updateProfile = async (req, res) => {
   try {
     const userId = req.userId;
     const name = req.body?.name?.trim();
-    // Kept as typed, the same way register/login compare emails
-    const email = req.body?.email?.trim();
+    // Lowercase, the same way register/login save and compare emails
+    const email = req.body?.email?.trim().toLowerCase();
 
     if (!name || !email) {
       return res.status(400).json({ message: 'Name and email are required' });
@@ -56,7 +56,7 @@ export const updateProfile = async (req, res) => {
 
     // The email must not belong to another account
     const emailTaken = await pool.query(
-      "SELECT 1 FROM users WHERE email = $1 AND id <> $2",
+      "SELECT 1 FROM users WHERE LOWER(email) = $1 AND id <> $2",
       [email, userId]
     );
 
