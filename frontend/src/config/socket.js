@@ -8,5 +8,5 @@ export const socket = io(SOCKET_URL, {
   autoConnect: false,
   withCredentials: true,
   // Send the login token on every (re)connect; the server rejects sockets without a valid one
-  auth: (callback) => callback({ token: sessionStorage.getItem("token") }),
+  auth: (callback) => callback({ token: localStorage.getItem("token") }),
 });

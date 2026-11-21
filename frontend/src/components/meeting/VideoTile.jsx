@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { MicOff, VideoOff } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { MicOff, VideoOff, Volume2 } from "lucide-react";
 
 function VideoTile({
   stream,
@@ -7,15 +7,22 @@ function VideoTile({
   isLocal = false,
   audioEnabled = true,
   videoEnabled = true,
+  connectionState,
 }) {
   const videoRef = useRef(null);
 
-  // Attach the participant's media stream to the video element
+  // Phones (especially iPhone) may block a video with sound from starting by itself
+  const [needsTap, setNeedsTap] = useState(false);
+
+  // Attach the participant's media stream to the video element and start it
   useEffect(() => {
     const videoElement = videoRef.current;
 
     if (videoElement && stream) {
       videoElement.srcObject = stream;
+      videoElement.play().catch(() => {
+        if (!isLocal) setNeedsTap(true);
+      });
     }
 
     return () => {
@@ -36,8 +43,9 @@ function VideoTile({
         autoPlay
         playsInline
         muted={isLocal}
-        // No mirroring: every tile (including your own) shows the true camera image
-        className={`h-full w-full object-cover ${showVideo ? "" : "hidden"}`}
+        // Your own preview is mirrored like a selfie camera (your left stays on the left).
+        // Other people's videos are not mirrored, and they see you the right way round.
+        className={`h-full w-full object-cover ${isLocal ? "-scale-x-100" : ""} ${showVideo ? "" : "hidden"}`}
       />
 
       {/* Camera-off placeholder */}
@@ -53,6 +61,40 @@ function VideoTile({
             Camera off
           </div>
         </div>
+      )}
+
+      {/* Connection status for other people's tiles while not connected */}
+      {!isLocal && ["new", "checking", "failed", "disconnected"].includes(connectionState) && (
+        <div
+          className={`absolute left-2 top-2 z-10 rounded-full px-2.5 py-1 text-[11px] font-semibold text-white shadow ${
+            connectionState === "failed" || connectionState === "disconnected"
+              ? "bg-red-500/90"
+              : "bg-black/60"
+          }`}
+        >
+          {connectionState === "failed"
+            ? "Can't connect (network blocked)"
+            : connectionState === "disconnected"
+            ? "Reconnecting..."
+            : "Connecting..."}
+        </div>
+      )}
+
+      {/* Shown when the browser blocked playback; a tap is allowed to start it */}
+      {needsTap && (
+        <button
+          type="button"
+          onClick={() => {
+            videoRef.current?.play().catch(() => {});
+            setNeedsTap(false);
+          }}
+          className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 text-sm font-semibold text-white"
+        >
+          <span className="flex items-center gap-2 rounded-full bg-brand-600 px-4 py-2">
+            <Volume2 size={16} />
+            Tap to hear {name}
+          </span>
+        </button>
       )}
 
       {/* Bottom information overlay */}

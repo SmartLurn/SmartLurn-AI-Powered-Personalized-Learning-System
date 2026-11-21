@@ -85,6 +85,7 @@ function VideoGrid({
             isLocal={participant.isLocal}
             audioEnabled={participant.audioEnabled}
             videoEnabled={participant.videoEnabled}
+            connectionState={participant.connectionState}
           />
         </div>
       ))}

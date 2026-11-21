@@ -39,13 +39,13 @@ function ControlPanel({
     };
   }, []);
 
-  // Copy the current meeting URL.
+  // Copy the meeting code, which others type into "Join Room"
   const copyMeetingId = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(roomId);
 
       setCopied(true);
-      toast.success("Meeting link copied!");
+      toast.success("Meeting code copied!");
 
       clearTimeout(timeoutRef.current);
 
@@ -53,8 +53,8 @@ function ControlPanel({
         setCopied(false);
       }, 2000);
     } catch (error) {
-      console.error("Failed to copy meeting link:", error);
-      toast.error("Unable to copy the meeting link.");
+      console.error("Failed to copy meeting code:", error);
+      toast.error("Unable to copy the meeting code.");
     }
   };
 
@@ -64,10 +64,10 @@ function ControlPanel({
   return (
     <footer className="flex min-h-20 items-center justify-between gap-2 border-t border-slate-200 bg-white px-3 py-3 sm:gap-3 sm:px-4">
 
-      {/* LEFT: Meeting ID and Copy Link */}
+      {/* LEFT: Meeting code and Copy Code */}
       <div className="flex min-w-0 items-center gap-3">
         <div className="hidden min-w-0 sm:block">
-          <p className="text-xs text-slate-400">Meeting ID</p>
+          <p className="text-xs text-slate-400">Meeting code</p>
           <p className="max-w-32 truncate text-sm font-semibold text-slate-700">
             {roomId}
           </p>
@@ -77,11 +77,12 @@ function ControlPanel({
           type="button"
           onClick={copyMeetingId}
           className="flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
-          title="Copy meeting link"
+          title="Copy meeting code"
+          aria-label="Copy meeting code"
         >
           {copied ? <Check size={16} /> : <Copy size={16} />}
 
-          <span className="hidden sm:inline">{copied ? "Copied" : "Copy Link"}</span>
+          <span className="hidden sm:inline">{copied ? "Copied" : "Copy Code"}</span>
         </button>
       </div>
 

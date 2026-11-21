@@ -25,6 +25,43 @@ export const isRoomFull = (roomId, userId) => {
     return otherUsers.size >= MAX_PARTICIPANTS;
 };
 
+// When the host leaves (closes the tab, goes back, loses connection), the meeting
+// ends for everyone after this delay, unless the host rejoins (e.g. a page refresh).
+const HOST_RETURN_SECONDS = 15;
+
+// roomId -> timer that will end the meeting
+const hostLeftTimers = new Map();
+
+const isHostInRoom = (roomId) => {
+    const roomParticipants = rooms.get(roomId);
+    if (!roomParticipants) return false;
+    return Array.from(roomParticipants.values()).some((participant) => participant.isHost);
+};
+
+// Mark the meeting as ended in the database and send everyone out
+const endMeetingForAll = async (io, roomId, message) => {
+    clearTimeout(hostLeftTimers.get(roomId));
+    hostLeftTimers.delete(roomId);
+
+    // 'completed' is the ended status allowed by the study_sessions table
+    await pool.query(
+        "UPDATE study_sessions SET status = 'completed', ended_at = NOW() WHERE meeting_code = $1 AND status <> 'completed'",
+        [roomId]
+    );
+
+    // Everyone still in the meeting leaves now
+    await pool.query(
+        `UPDATE session_participants SET left_at = NOW()
+         WHERE left_at IS NULL
+           AND session_id = (SELECT id FROM study_sessions WHERE meeting_code = $1)`,
+        [roomId]
+    );
+
+    rooms.delete(roomId);
+
+    io.to(roomId).emit('meeting-ended', { message });
+};
+
 export function setupSocketIO(io){
 
     // Check the login token before allowing a socket connection.
@@ -102,6 +139,13 @@ export function setupSocketIO(io){
 
                 // Add the newcomer to the room
                 roomParticipants.set(socket.id, currentUser);
+
+                // The host came back in time (e.g. refreshed the page): keep the meeting going
+                if (isHost && hostLeftTimers.has(roomId)) {
+                    clearTimeout(hostLeftTimers.get(roomId));
+                    hostLeftTimers.delete(roomId);
+                    socket.to(roomId).emit('host-returned');
+                }
 
                 // Save the participant in the database if not already saved
                 const existingParticipant = await pool.query(
@@ -223,23 +267,7 @@ export function setupSocketIO(io){
             try {
                 if (!currentUser || !currentUser.isHost) return; // only the host can end it
 
-                // 'completed' is the ended status allowed by the study_sessions table
-                await pool.query(
-                    "UPDATE study_sessions SET status = 'completed', ended_at = NOW() WHERE meeting_code = $1",
-                    [roomId]
-                );
-
-                // Everyone still in the meeting leaves now
-                await pool.query(
-                    `UPDATE session_participants SET left_at = NOW()
-                     WHERE left_at IS NULL
-                       AND session_id = (SELECT id FROM study_sessions WHERE meeting_code = $1)`,
-                    [roomId]
-                );
-
-                rooms.delete(roomId);
-
-                io.to(roomId).emit('meeting-ended', { message: 'The meeting has been ended by the host' });
+                await endMeetingForAll(io, roomId, 'The meeting has been ended by the host');
             } catch (error) {
                 console.log('End meeting error:', error);
             }
@@ -248,20 +276,40 @@ export function setupSocketIO(io){
         // ---------- Disconnect ----------
         // Runs automatically when the user closes the tab, leaves, or loses connection
         socket.on('disconnect', () => {
-            if (currentRoomId && rooms.has(currentRoomId)) {
-                const roomParticipants = rooms.get(currentRoomId);
-                roomParticipants.delete(socket.id);
+            // Not in a room, or the meeting was already ended
+            if (!currentRoomId || !rooms.has(currentRoomId)) return;
 
-                if (roomParticipants.size === 0) {
-                    // Last person left, so remove the empty room
-                    rooms.delete(currentRoomId);
-                } else {
-                    // Tell the remaining people this user has left
-                    socket.to(currentRoomId).emit('user-disconnected', {
-                        socketId: socket.id,
-                        userId: currentUser?.userId,
-                    });
-                }
+            const roomId = currentRoomId;
+            const roomParticipants = rooms.get(roomId);
+            roomParticipants.delete(socket.id);
+
+            if (roomParticipants.size === 0) {
+                // Last person left, so remove the empty room
+                rooms.delete(roomId);
+            } else {
+                // Tell the remaining people this user has left
+                socket.to(roomId).emit('user-disconnected', {
+                    socketId: socket.id,
+                    userId: currentUser?.userId,
+                });
+            }
+
+            // The host left (and has no other tab in the room): end the meeting
+            // for everyone, unless they come back within HOST_RETURN_SECONDS
+            if (currentUser?.isHost && !isHostInRoom(roomId)) {
+                io.to(roomId).emit('host-left', { seconds: HOST_RETURN_SECONDS });
+
+                clearTimeout(hostLeftTimers.get(roomId));
+                hostLeftTimers.set(
+                    roomId,
+                    setTimeout(() => {
+                        if (isHostInRoom(roomId)) return; // host is back
+
+                        endMeetingForAll(io, roomId, 'The host left, so the meeting has ended').catch(
+                            (error) => console.log('End meeting after host left error:', error)
+                        );
+                    }, HOST_RETURN_SECONDS * 1000)
+                );
             }
         });
     })

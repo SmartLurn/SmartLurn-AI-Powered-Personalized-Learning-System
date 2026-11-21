@@ -79,16 +79,28 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
   };
 
   // Create a WebRTC connection to one remote user
-  const createPeer = (targetSocketId) => {
+  // isCaller = true when we send the offer (we are the newcomer)
+  const createPeer = (targetSocketId, isCaller = false) => {
     const peer = new RTCPeerConnection(ICE_SERVERS);
 
     // ICE candidates that arrive before the remote description is set wait here
     peer.pendingCandidates = [];
 
     // Send our camera and microphone to them
-    localStreamRef.current?.getTracks().forEach((track) => {
+    const localTracks = localStreamRef.current?.getTracks() || [];
+    localTracks.forEach((track) => {
       peer.addTrack(track, localStreamRef.current);
     });
+
+    // If we have no camera or mic (blocked/missing), still ask to RECEIVE theirs.
+    // Otherwise the offer has nothing in it and no video/audio flows either way.
+    if (isCaller) {
+      ["audio", "video"].forEach((kind) => {
+        if (!localTracks.some((track) => track.kind === kind)) {
+          peer.addTransceiver(kind, { direction: "recvonly" });
+        }
+      });
+    }
 
     // Send our network details to them through the server
     peer.onicecandidate = (event) => {
@@ -101,9 +113,34 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
       }
     };
 
+    // The direct connection failed: usually a network (mobile data, strict Wi-Fi)
+    // that blocks peer-to-peer video. A TURN server (VITE_TURN_URL) fixes this.
+    peer.oniceconnectionstatechange = () => {
+      console.log(`Connection to ${targetSocketId}:`, peer.iceConnectionState);
+
+      // Shown on their video tile ("Connecting...", "Can't connect")
+      updateRemoteUser(targetSocketId, { connectionState: peer.iceConnectionState });
+
+      if (peer.iceConnectionState === "failed") {
+        toast.error(
+          "Couldn't connect video with a participant. Their network may block video calls.",
+          { id: `ice-failed-${targetSocketId}` }
+        );
+      }
+    };
+
     // Their video/audio arrived
     peer.ontrack = (event) => {
-      updateRemoteUser(targetSocketId, { stream: event.streams[0] });
+      // Normally the track comes inside their stream; if not, collect tracks ourselves
+      let stream = event.streams[0];
+
+      if (!stream) {
+        peer.fallbackStream = peer.fallbackStream || new MediaStream();
+        peer.fallbackStream.addTrack(event.track);
+        stream = peer.fallbackStream;
+      }
+
+      updateRemoteUser(targetSocketId, { stream });
     };
 
     peersRef.current.set(targetSocketId, peer);
@@ -114,10 +151,13 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
   const setRemoteDescription = async (peer, sdp) => {
     await peer.setRemoteDescription(new RTCSessionDescription(sdp));
 
-    for (const candidate of peer.pendingCandidates) {
-      await peer.addIceCandidate(new RTCIceCandidate(candidate));
+    // Take candidates one by one so none arriving meanwhile get lost
+    while (peer.pendingCandidates.length > 0) {
+      const candidate = peer.pendingCandidates.shift();
+      await peer.addIceCandidate(new RTCIceCandidate(candidate)).catch((error) =>
+        console.log("Could not add ICE candidate:", error)
+      );
     }
-    peer.pendingCandidates = [];
   };
 
   // Close the connection to one remote user
@@ -136,7 +176,7 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
       for (const existingUser of existingUsers) {
         addRemoteUser(existingUser);
 
-        const peer = createPeer(existingUser.socketId);
+        const peer = createPeer(existingUser.socketId, true);
         const offer = await peer.createOffer();
         await peer.setLocalDescription(offer);
 
@@ -183,7 +223,9 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
       if (!peer) return;
 
       if (peer.remoteDescription) {
-        await peer.addIceCandidate(new RTCIceCandidate(candidate));
+        await peer.addIceCandidate(new RTCIceCandidate(candidate)).catch((error) =>
+          console.log("Could not add ICE candidate:", error)
+        );
       } else {
         peer.pendingCandidates.push(candidate);
       }
@@ -226,9 +268,25 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
       }
     };
 
+    // The host left: the meeting ends unless they come back in time
+    const handleHostLeft = ({ seconds }) => {
+      toast(`The host left. The meeting will end in ${seconds} seconds unless they return.`, {
+        id: "host-left",
+        icon: "⏳",
+        duration: seconds * 1000,
+      });
+    };
+
+    const handleHostReturned = () => {
+      toast.dismiss("host-left");
+      toast.success("The host is back");
+    };
+
     socket.on("meeting-ended", handleMeetingEnded);
     socket.on("join-error", handleJoinError);
     socket.on("connect_error", handleConnectError);
+    socket.on("host-left", handleHostLeft);
+    socket.on("host-returned", handleHostReturned);
 
     // Get the camera first so it is shared with everyone we connect to
     const start = async () => {
@@ -258,6 +316,8 @@ const useWebRTC = ({ roomId, user, onMeetingEnded }) =>
       socket.off("meeting-ended", handleMeetingEnded);
       socket.off("join-error", handleJoinError);
       socket.off("connect_error", handleConnectError);
+      socket.off("host-left", handleHostLeft);
+      socket.off("host-returned", handleHostReturned);
 
       peersRef.current.forEach((peer) => peer.close());
       peersRef.current.clear();
