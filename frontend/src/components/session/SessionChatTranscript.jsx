@@ -4,7 +4,7 @@ import { MessageCircle } from "lucide-react";
 export default function SessionChatTranscript({ messages = [] }) {
   if (messages.length === 0) {
     return (
-      <div className="flex min-h-64 flex-col items-center justify-center px-4 py-10 text-center">
+      <div className="flex h-full flex-col items-center justify-center px-4 text-center">
         <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-100 text-brand-600">
           <MessageCircle size={26} />
         </div>
@@ -22,7 +22,7 @@ export default function SessionChatTranscript({ messages = [] }) {
   }
 
   return (
-    <div className="max-h-80 space-y-4 overflow-y-auto p-1">
+    <div className="space-y-4 p-1">
       {messages.map((message) => (
         <div
           key={message.id}

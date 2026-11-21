@@ -14,7 +14,7 @@ export default function SessionParticipantsLog({ participants = [] }) {
 
   if (sortedParticipants.length === 0) {
     return (
-      <div className="flex min-h-64 flex-col items-center justify-center px-4 py-10 text-center">
+      <div className="flex h-full flex-col items-center justify-center px-4 text-center">
         <Users size={30} className="mb-4 text-brand-500" />
 
         <h3 className="font-semibold text-slate-800">
@@ -29,7 +29,7 @@ export default function SessionParticipantsLog({ participants = [] }) {
   }
 
   return (
-    <div className="max-h-80 space-y-3 overflow-y-auto p-1">
+    <div className="space-y-3 p-1">
       {sortedParticipants.map((participant) => (
         <div
           key={participant.id}

@@ -124,7 +124,8 @@ export default function SessionDetailsModal({ session, onClose }) {
         </div>
 
         {/* Active tab content */}
-        <div className="mt-5">
+        {/* Same fixed height for both tabs, so the window doesn't jump when switching */}
+        <div className="mt-5 h-[45dvh] overflow-y-auto sm:h-80">
           {activeTab === "chat" ? (
             <SessionChatTranscript messages={session.messages ?? []} />
           ) : (
